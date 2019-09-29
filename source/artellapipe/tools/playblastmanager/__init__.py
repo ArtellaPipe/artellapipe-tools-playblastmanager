@@ -69,7 +69,7 @@ def run(project=None, do_reload=False):
     """
 
     init(do_reload=do_reload)
-    from artellapipe.tools.playblastmanager import playblastmanager
+    from artellapipe.tools.playblastmanager.core import playblastmanager
     win = playblastmanager.run(project=project)
     return win
 
