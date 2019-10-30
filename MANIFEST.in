@@ -1,1 +1,2 @@
-include source/artellapipe/tools/resources/images/*.*
+include source/artellapipe/tools/playblastmanager/__logging__.ini
+include source/artellapipe/tools/playblastmanager/resources/images/*.*

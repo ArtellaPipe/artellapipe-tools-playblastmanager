@@ -34,6 +34,7 @@ else:
 
 from artellapipe.utils import resource
 
+
 class PlayblastPreview(base.BaseWidget, object):
     """
     Playblast image preview
@@ -75,7 +76,7 @@ class PlayblastPreview(base.BaseWidget, object):
         # self.open_playblasts_folder_btn.setStyleSheet("background-color: rgba(255, 255, 255, 0); border: 0px solid rgba(255,255,255,0);")
         # self.open_playblasts_folder_btn.move(5, 5)
 
-        sync_icon = resource.ResourceManager.instance().icon('sync')
+        sync_icon = resource.ResourceManager().icon('sync')
         self.sync_preview_btn = QPushButton()
         self.sync_preview_btn.setIcon(sync_icon)
         self.sync_preview_btn.setFixedWidth(25)

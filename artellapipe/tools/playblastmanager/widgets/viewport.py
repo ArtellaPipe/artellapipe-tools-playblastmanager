@@ -24,13 +24,9 @@ if tp.is_maya():
     import tpMayaLib as maya
     from tpMayaLib.core import gui
 
-import artellapipe.tools.playblastmanager
 from artellapipe.tools.playblastmanager.core import defines, plugin
 
-
-logging.config.fileConfig(artellapipe.tools.playblastmanager.get_logging_config(), disable_existing_loggers=False)
-logger = logging.getLogger(__name__)
-logger.setLevel(artellapipe.tools.playblastmanager.get_logging_level())
+LOGGER = logging.getLogger()
 
 
 @contextlib.contextmanager
@@ -374,7 +370,7 @@ class ViewportOptionsWidget(plugin.PlayblastPlugin, object):
 
         panel = gui.get_active_panel()
         if not panel or 'modelPanel' not in panel:
-            logger.warning('No active model panel found!')
+            LOGGER.warning('No active model panel found!')
             return dict()
 
         return self.parse_view(panel)

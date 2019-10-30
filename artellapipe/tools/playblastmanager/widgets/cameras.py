@@ -22,17 +22,13 @@ from tpPyUtils import python
 
 import tpDccLib as tp
 
-import artellapipe.tools.playblastmanager
 from artellapipe.utils import resource
 from artellapipe.tools.playblastmanager.core import defines, plugin
 
 if tp.is_maya():
     import tpMayaLib as maya
-    from tpMayaLib.core import shape
 
-logging.config.fileConfig(artellapipe.tools.playblastmanager.get_logging_config(), disable_existing_loggers=False)
-logger = logging.getLogger(__name__)
-logger.setLevel(artellapipe.tools.playblastmanager.get_logging_level())
+LOGGER = logging.getLogger()
 
 
 @contextlib.contextmanager
@@ -51,7 +47,7 @@ def applied_camera_options(options, panel):
         try:
             old_options[option] = tp.Dcc.get_attribute_value(node=camera, attribute_name=option)
         except Exception as e:
-            logger.error('Could not get camera attribute for capture: "{}"'.format(option))
+            LOGGER.error('Could not get camera attribute for capture: "{}"'.format(option))
 
     for option, value in options.items():
         tp.Dcc.set_attribute_value(node=camera, attribute_name=option, attribute_value=value)
@@ -91,7 +87,7 @@ class CamerasWidget(plugin.PlayblastPlugin, object):
 
         self.get_active = QPushButton('Get Active')
         self.get_active.setToolTip('Set camera from currently active view')
-        refresh_icon = resource.ResourceManager.instance().icon('refresh')
+        refresh_icon = resource.ResourceManager().icon('refresh')
         self.refresh = QPushButton()
         self.refresh.setMaximumWidth(25)
         self.refresh.setIcon(refresh_icon)
@@ -228,7 +224,7 @@ class CamerasWidget(plugin.PlayblastPlugin, object):
             self.cameras.blockSignals(False)
         except Exception as e:
             self.cameras.blockSignals(False)
-            logger.error('{} | {}'.format(e, traceback.format_exc()))
+            LOGGER.error('{} | {}'.format(e, traceback.format_exc()))
 
         if cam != self.get_outputs()['camera']:
             camera_index = self.cameras.currentIndex()

@@ -26,13 +26,10 @@ import tpDccLib as tp
 
 from tpQtLib.widgets import splitters
 
-import artellapipe.tools.playblastmanager
 from artellapipe.utils import resource
 from artellapipe.tools.playblastmanager.core import plugin
 
-logging.config.fileConfig(artellapipe.tools.playblastmanager.get_logging_config(), disable_existing_loggers=False)
-logger = logging.getLogger(__name__)
-logger.setLevel(artellapipe.tools.playblastmanager.get_logging_level())
+LOGGER = logging.getLogger()
 
 
 class RecentPlayblastAction(QAction, object):
@@ -123,7 +120,7 @@ class SaveWidget(plugin.PlayblastPlugin, object):
         self.file_path.setStatusTip(tip)
         self.file_path.setContextMenuPolicy(Qt.CustomContextMenu)
         self.file_path.customContextMenuRequested.connect(self._on_show_token_menu)
-        browse_icon = resource.ResourceManager.instance().icon('open')
+        browse_icon = resource.ResourceManager().icon('open')
         self.browse = QPushButton()
         self.browse.setIcon(browse_icon)
         self.browse.setFixedWidth(30)
@@ -238,7 +235,7 @@ class SaveWidget(plugin.PlayblastPlugin, object):
         :param options:
         """
 
-        logger.debug('Generating Playblast with options: {}'.format(options))
+        LOGGER.debug('Generating Playblast with options: {}'.format(options))
 
         playblast_file = options['filename']
         if not playblast_file:

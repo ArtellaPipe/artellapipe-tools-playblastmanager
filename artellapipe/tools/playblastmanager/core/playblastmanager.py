@@ -25,8 +25,8 @@ import tpDccLib as tp
 
 from tpQtLib.widgets import accordion
 
-import artellapipe.tools.playblastmanager
-from artellapipe.gui import window, dialog
+from artellapipe.core import tool
+from artellapipe.gui import dialog
 from artellapipe.tools.playblastmanager.core import plugin
 from artellapipe.tools.playblastmanager.widgets import presets, preview, viewport, displayoptions, cameras, codec, options, panzoom, renderer, resolution, save, timerange
 from artellapipe.tools.playblastmanager.plugins import mask
@@ -35,9 +35,7 @@ if tp.is_maya():
     import tpMayaLib as maya
     from tpMayaLib.core import helpers, layer, gui, playblast
 
-logging.config.fileConfig(artellapipe.tools.playblastmanager.get_logging_config(), disable_existing_loggers=False)
-logger = logging.getLogger(__name__)
-logger.setLevel(artellapipe.tools.playblastmanager.get_logging_level())
+LOGGER = logging.getLogger()
 
 # ========================================================================================================
 
@@ -67,17 +65,14 @@ class DefaultPlayblastOptions(plugin.PlayblastPlugin, object):
         return outputs
 
 
-class PlayblastManager(window.ArtellaWindow, object):
+class PlayblastManager(tool.Tool, object):
 
     optionsChanged = Signal(dict)
     playblastStart = Signal(dict)
     playblastFinished = Signal(dict)
     viewerStart = Signal(dict)
 
-    VERSION = '0.0.2'
-    LOGO_NAME = 'playblastmanager_logo'
-
-    def __init__(self, project):
+    def __init__(self, project, config):
         self.playblast_widgets = list()
         self.config_dialog = None
 
@@ -93,12 +88,7 @@ class PlayblastManager(window.ArtellaWindow, object):
 
         register_token('<{}>'.format(project_name), lambda attrs_dict: project.get_path(), label='Insert {} project path'.format(project_name))
 
-        super(PlayblastManager, self).__init__(
-            project=project,
-            name='ArtellaPlayblastManager',
-            title='Playblast Manager',
-            size=(710, 445)
-        )
+        super(PlayblastManager, self).__init__(project=project, config=config)
 
     def ui(self):
         super(PlayblastManager, self).ui()
@@ -186,7 +176,7 @@ class PlayblastManager(window.ArtellaWindow, object):
         for widget in config_widgets:
             widget_inputs = widget.get_inputs(as_preset=as_preset)
             if not isinstance(widget_inputs, dict):
-                logger.warning('Widget inputs are not a valid dictionary "{0}" : "{1}"'.format(widget.id, widget_inputs))
+                LOGGER.warning('Widget inputs are not a valid dictionary "{0}" : "{1}"'.format(widget.id, widget_inputs))
                 return
             if not widget_inputs:
                 continue
@@ -393,7 +383,7 @@ def capture_scene(options):
     """
 
     filename = options.get('filename', '%TEMP%')
-    logger.info('Capturing to {}'.format(filename))
+    LOGGER.info('Capturing to {}'.format(filename))
     options = options.copy()
 
     # Force viewer to False in call to capture because we have our own viewer opening call to allow a signal
@@ -414,7 +404,7 @@ def capture(**kwargs):
     """
 
     if not tp.is_maya():
-        logger.warning('Playblast is only supported in Maya!')
+        LOGGER.warning('Playblast is only supported in Maya!')
         return
 
     filename = kwargs.get('filename', None)
@@ -492,7 +482,7 @@ def capture(**kwargs):
             # so we ignore the state when calling it with a movie
             # format
             if format != "image" and raw_frame_numbers:
-                logger.warning("Capturing to image format with raw frame numbers is not supported. Ignoring raw frame numbers...")
+                LOGGER.warning("Capturing to image format with raw frame numbers is not supported. Ignoring raw frame numbers...")
                 raw_frame_numbers = False
 
             output = maya.cmds.playblast(

@@ -1,5 +1,5 @@
 # ===================================================================
-# artellapipe-tools-artellauploader requirements file
+# artellapipe-tools-playblastmanager requirements file
 # ===================================================================
 
-artellapipe-core
+artellapipe

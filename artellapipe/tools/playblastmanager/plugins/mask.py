@@ -20,19 +20,16 @@ from Qt.QtCore import *
 from Qt.QtWidgets import *
 from Qt.QtGui import *
 
-from tpQtLib.widgets import splitters, button
+from tpQtLib.widgets import splitters, buttons
 
 import tpDccLib as tp
 
-import artellapipe.tools.playblastmanager
 from artellapipe.tools.playblastmanager.core import plugin
 
 if tp.is_maya():
     import tpMayaLib as maya
 
-logging.config.fileConfig(artellapipe.tools.playblastmanager.get_logging_config(), disable_existing_loggers=False)
-logger = logging.getLogger(__name__)
-logger.setLevel(artellapipe.tools.playblastmanager.get_logging_level())
+LOGGER = logging.getLogger()
 
 
 class MaskTextAlignment(object):
@@ -60,8 +57,8 @@ class MaskObject(object):
             try:
                 tp.Dcc.load_plugin(os.path.realpath(__file__).replace('.pyc', '.py'))
             except Exception as e:
-                logger.error('Failed to load SolsticeMask plugin! | {}'.format(str(e)))
-                logger.debug('Please import {} plugin manually!'.format(cls.mask_plugin))
+                LOGGER.error('Failed to load SolsticeMask plugin! | {}'.format(str(e)))
+                LOGGER.debug('Please import {} plugin manually!'.format(cls.mask_plugin))
                 return
 
         if not cls.get_mask():
@@ -173,8 +170,8 @@ class MaskWidget(plugin.PlayblastPlugin, object):
         self.font_line.setReadOnly(True)
         self.font_line.setText('Consolas')
         self.font_btn = QPushButton('...')
-        self.color_btn = button.ColorButton(colorR=1, colorG=1, colorB=1)
-        self.alpha_btn = button.ColorButton(colorR=1, colorG=1, colorB=1)
+        self.color_btn = buttons.ColorButton(colorR=1, colorG=1, colorB=1)
+        self.alpha_btn = buttons.ColorButton(colorR=1, colorG=1, colorB=1)
         self.scale_spn = QDoubleSpinBox()
         self.scale_spn.setRange(0.1, 2.0)
         self.scale_spn.setValue(1.0)
@@ -233,9 +230,9 @@ class MaskWidget(plugin.PlayblastPlugin, object):
         cbx_layout.addWidget(self.top_cbx)
         cbx_layout.addWidget(self.bottom_cbx)
 
-        self.border_color_btn = button.ColorButton(colorR=0, colorG=0, colorB=0)
+        self.border_color_btn = buttons.ColorButton(colorR=0, colorG=0, colorB=0)
         self.border_color_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        self.border_alpha_btn = button.ColorButton(colorR=1, colorG=1, colorB=1)
+        self.border_alpha_btn = buttons.ColorButton(colorR=1, colorG=1, colorB=1)
         self.border_scale_spn = QDoubleSpinBox()
         self.border_scale_spn.setRange(0.5, 2.0)
         self.border_scale_spn.setValue(1.0)

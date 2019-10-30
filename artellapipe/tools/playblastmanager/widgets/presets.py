@@ -24,12 +24,9 @@ from tpPyUtils import jsonio, fileio, folder as folder_utils
 
 from tpQtLib.core import base
 
-import artellapipe.tools.playblastmanager
 from artellapipe.utils import resource
 
-logging.config.fileConfig(artellapipe.tools.playblastmanager.get_logging_config(), disable_existing_loggers=False)
-logger = logging.getLogger(__name__)
-logger.setLevel(artellapipe.tools.playblastmanager.get_logging_level())
+LOGGER = logging.getLogger()
 
 
 class PlayblastPreset(base.BaseWidget, object):
@@ -71,21 +68,21 @@ class PlayblastPreset(base.BaseWidget, object):
         self._presets.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self._presets.addItem('*')
 
-        save_icon = resource.ResourceManager.instance().icon('save')
+        save_icon = resource.ResourceManager().icon('save')
         self._save_btn = QPushButton()
         self._save_btn.setIcon(save_icon)
         self._save_btn.setFixedWidth(30)
         self._save_btn.setToolTip('Save Preset')
         self._save_btn.setStatusTip('Save Preset')
 
-        load_icon = resource.ResourceManager.instance().icon('open')
+        load_icon = resource.ResourceManager().icon('open')
         self._load_btn = QPushButton()
         self._load_btn.setIcon(load_icon)
         self._load_btn.setFixedWidth(30)
         self._load_btn.setToolTip('Load Preset')
         self._load_btn.setStatusTip('Load Preset')
 
-        preset_config_icon = resource.ResourceManager.instance().icon('settings')
+        preset_config_icon = resource.ResourceManager().icon('settings')
         self._preset_config = QPushButton()
         self._preset_config.setIcon(preset_config_icon)
         self._preset_config.setFixedWidth(30)
@@ -96,7 +93,7 @@ class PlayblastPreset(base.BaseWidget, object):
         vertical_separator.setFrameShape(QFrame.VLine)
         vertical_separator.setFrameShadow(QFrame.Sunken)
 
-        open_templates_folder_icon = resource.ResourceManager.instance().icon('search')
+        open_templates_folder_icon = resource.ResourceManager().icon('search')
         self._open_templates_folder_btn = QPushButton()
         self._open_templates_folder_btn.setIcon(open_templates_folder_icon)
         self._open_templates_folder_btn.setFixedWidth(30)
@@ -130,10 +127,10 @@ class PlayblastPreset(base.BaseWidget, object):
         index = self._presets.findData(path)
         if index == -1:
             if os.path.exists(path):
-                logger.info('Adding previously selected preset explicitilly: {}'.format(path))
+                LOGGER.info('Adding previously selected preset explicitilly: {}'.format(path))
                 self.add_preset(path)
             else:
-                logger.warning('Previously selected preset is not available: {}'.format(path))
+                LOGGER.warning('Previously selected preset is not available: {}'.format(path))
                 index = 0
 
         self._presets.setCurrentIndex(index)
@@ -163,7 +160,7 @@ class PlayblastPreset(base.BaseWidget, object):
         """
 
         if path in cls.registered_paths:
-            logger.warning('Preset path already registered: "{}"'.format(path))
+            LOGGER.warning('Preset path already registered: "{}"'.format(path))
             return
         cls.registered_paths.append(path)
 
@@ -189,7 +186,7 @@ class PlayblastPreset(base.BaseWidget, object):
                 if file_name.startswith('_'):
                     continue
                 if not fileio.file_has_info(file_name):
-                    logger.warning('File size is smaller than 1 byte for preset file: "{}"'.format(file_name))
+                    LOGGER.warning('File size is smaller than 1 byte for preset file: "{}"'.format(file_name))
                     continue
                 if file_name not in presets:
                     presets.append(file_name)
@@ -213,7 +210,7 @@ class PlayblastPreset(base.BaseWidget, object):
 
         filename = os.path.normpath(filename)
         if not os.path.exists(filename):
-            logger.warning('Preset file does not exists: "{}"'.format(filename))
+            LOGGER.warning('Preset file does not exists: "{}"'.format(filename))
             return
 
         label = os.path.splitext(os.path.basename(filename))[0]
@@ -221,7 +218,7 @@ class PlayblastPreset(base.BaseWidget, object):
 
         paths = [self._presets.itemData(i) for i in range(item_count)]
         if filename in paths:
-            logger.info('Preset is already in the presets list: "{}"'.format(filename))
+            LOGGER.info('Preset is already in the presets list: "{}"'.format(filename))
             item_index = paths.index(filename)
         else:
             self._presets.addItem(label, userData=filename)
