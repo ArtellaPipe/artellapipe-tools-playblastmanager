@@ -135,7 +135,7 @@ class PlayblastPreview(base.BaseWidget, object):
             options['compression'] = 'jpg'
             options['sound'] = None
 
-            frame_name = artellapipe.PlayblastsMgr().capture(**options)
+            frame_name = artellapipe.PlayblastsMgr().capture_scene(**options)
             if not frame_name:
                 LOGGER.warning('Preview failed!')
                 return
