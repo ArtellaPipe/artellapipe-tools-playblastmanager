@@ -12,7 +12,6 @@ __license__ = "MIT"
 __maintainer__ = "Tomas Poveda"
 __email__ = "tpovedatd@gmail.com"
 
-import contextlib
 from collections import OrderedDict
 import logging.config
 
@@ -20,62 +19,13 @@ from Qt.QtWidgets import *
 
 import tpDccLib as tp
 
+from artellapipe.tools.playblastmanager.core import defines, plugin
+
 if tp.is_maya():
     import tpMayaLib as maya
     from tpMayaLib.core import gui
 
-from artellapipe.tools.playblastmanager.core import defines, plugin
-
 LOGGER = logging.getLogger()
-
-
-@contextlib.contextmanager
-def applied_viewport_options(options, panel):
-    """
-    Context manager for applying options to panel
-    :param options: dict
-    :param panel: str
-    """
-
-    options = dict(defines.ViewportOptions, **(options or {}))
-    playblast_widgets = maya.cmds.pluginDisplayFilter(query=True, listFilters=True)
-    widget_options = dict()
-
-    for widget in playblast_widgets:
-        if widget in options:
-            widget_options[widget] = options.pop(widget)
-
-    maya.cmds.modelEditor(panel, edit=True, **options)
-
-    for widget, state in widget_options.items():
-        maya.cmds.modelEditor(panel, edit=True, pluginObjects=(widget, state))
-
-    yield
-
-
-@contextlib.contextmanager
-def applied_viewport2_options(options):
-    """
-    Context manager for setting viewport 2.0 options
-    :param options: dict
-    """
-
-    options = dict(defines.Viewport2Options, **(options or {}))
-    original = dict()
-
-    for option in options.copy():
-        try:
-            original[option] = maya.cmds.getAttr('hardwareRenderingGlobals.' + option)
-        except ValueError:
-            options.pop(option)
-    for option, value in options.items():
-        maya.cmds.setAttr('hardwareRenderingGlobals.' + option, value)
-
-    try:
-        yield
-    finally:
-        for option, value in original.items():
-            maya.cmds.setAttr('hardwareRenderingGlobals.' + option, value)
 
 
 class ViewportOptionsWidget(plugin.PlayblastPlugin, object):

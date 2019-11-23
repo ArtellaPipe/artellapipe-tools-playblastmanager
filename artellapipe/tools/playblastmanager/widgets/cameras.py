@@ -12,7 +12,6 @@ __license__ = "MIT"
 __maintainer__ = "Tomas Poveda"
 __email__ = "tpovedatd@gmail.com"
 
-import contextlib
 import traceback
 import logging.config
 
@@ -23,41 +22,12 @@ from tpPyUtils import python
 import tpDccLib as tp
 
 from artellapipe.utils import resource
-from artellapipe.tools.playblastmanager.core import defines, plugin
+from artellapipe.tools.playblastmanager.core import plugin
 
 if tp.is_maya():
     import tpMayaLib as maya
 
 LOGGER = logging.getLogger()
-
-
-@contextlib.contextmanager
-def applied_camera_options(options, panel):
-    """
-    Context manager for applying options to camera
-    :param options: dict
-    :param panel: str
-    """
-
-    camera = maya.cmds.modelPanel(panel, query=True, camera=True)
-    options = dict(defines.CameraOptions, **(options or {}))
-    old_options = dict()
-
-    for option in options.copy():
-        try:
-            old_options[option] = tp.Dcc.get_attribute_value(node=camera, attribute_name=option)
-        except Exception as e:
-            LOGGER.error('Could not get camera attribute for capture: "{}"'.format(option))
-
-    for option, value in options.items():
-        tp.Dcc.set_attribute_value(node=camera, attribute_name=option, attribute_value=value)
-
-    try:
-        yield
-    finally:
-        if old_options:
-            for option, value in old_options.items():
-                tp.Dcc.set_attribute_value(node=camera, attribute_name=option, attribute_value=value)
 
 
 class CamerasWidget(plugin.PlayblastPlugin, object):
@@ -188,7 +158,7 @@ class CamerasWidget(plugin.PlayblastPlugin, object):
         camera = self._get_camera()
         self._on_refresh(camera=camera)
         if tp.is_maya():
-            maya.cmds.optionVar(sv=['solstice_playblast_camera', camera])
+            maya.cmds.optionVar(sv=['{}_playblast_camera'.format(self._project.name.lower()), camera])
         # if tp.Dcc.object_exists(camera):
         #     cmds.select(camera)
 

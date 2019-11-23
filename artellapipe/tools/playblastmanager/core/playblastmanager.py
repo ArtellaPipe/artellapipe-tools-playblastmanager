@@ -13,8 +13,7 @@ __maintainer__ = "Tomas Poveda"
 __email__ = "tpovedatd@gmail.com"
 
 import os
-import contextlib
-import logging.config
+import logging
 
 from Qt.QtCore import *
 from Qt.QtWidgets import *
@@ -25,30 +24,23 @@ import tpDccLib as tp
 
 from tpQtLib.widgets import accordion
 
-from artellapipe.core import tool
-from artellapipe.gui import dialog
+import artellapipe
+from artellapipe.widgets import dialog
 from artellapipe.tools.playblastmanager.core import plugin
-from artellapipe.tools.playblastmanager.widgets import presets, preview, viewport, displayoptions, cameras, codec, options, panzoom, renderer, resolution, save, timerange
-from artellapipe.tools.playblastmanager.plugins import mask
+from artellapipe.tools.playblastmanager.widgets import presets, preview, viewport, displayoptions, cameras, codec, \
+    options, panzoom, renderer, resolution, save, timerange
 
 if tp.is_maya():
-    import tpMayaLib as maya
-    from tpMayaLib.core import helpers, layer, gui, playblast
+    from tpMayaLib.core import helpers, layer
 
 LOGGER = logging.getLogger()
-
-# ========================================================================================================
-
-_registered_tokens = dict()
-
-# ========================================================================================================
 
 
 class DefaultPlayblastOptions(plugin.PlayblastPlugin, object):
 
     def get_outputs(self):
         outputs = dict()
-        scene = parse_current_scene()
+        scene = artellapipe.PlayblastsMgr().parse_current_scene()
         outputs['sound'] = scene['sound']
         outputs['show_ornaments'] = True
         outputs['camera_options'] = dict()
@@ -65,7 +57,7 @@ class DefaultPlayblastOptions(plugin.PlayblastPlugin, object):
         return outputs
 
 
-class PlayblastManager(tool.Tool, object):
+class PlayblastManager(artellapipe.Tool, object):
 
     optionsChanged = Signal(dict)
     playblastStart = Signal(dict)
@@ -78,15 +70,25 @@ class PlayblastManager(tool.Tool, object):
 
         project_name = project.get_clean_name()
 
-        register_token('<Camera>', camera_token, label='Insert camera name')
-        register_token('<Scene>', lambda attrs_dict: tp.Dcc.scene_name() or 'playblast', label='Insert current scene name')
+        artellapipe.PlayblastsMgr().register_token(
+            '<Camera>', artellapipe.PlayblastsMgr().get_camera_token, label='Insert camera name')
+        artellapipe.PlayblastsMgr().register_token(
+            '<Scene>', lambda attrs_dict: tp.Dcc.scene_name() or 'playblast', label='Insert current scene name')
 
         if tp.is_maya():
-            register_token('<RenderLayer>', lambda attrs_dict: layer.get_current_render_layer(), label='Insert active render layer name')
-            register_token('<Images>', lambda attrs_dict: helpers.get_project_rule('images'), label='Insert image directory of set project')
-            register_token('<Movies>', lambda attrs_dict: helpers.get_project_rule('movie'), label='Insert movies directory of set project')
+            artellapipe.PlayblastsMgr().register_token(
+                '<RenderLayer>',
+                lambda attrs_dict: layer.get_current_render_layer(), label='Insert active render layer name')
+            artellapipe.PlayblastsMgr().register_token(
+                '<Images>',
+                lambda attrs_dict: helpers.get_project_rule('images'), label='Insert image directory of set project')
+            artellapipe.PlayblastsMgr().register_token(
+                '<Movies>',
+                lambda attrs_dict: helpers.get_project_rule('movie'), label='Insert movies directory of set project')
 
-        register_token('<{}>'.format(project_name), lambda attrs_dict: project.get_path(), label='Insert {} project path'.format(project_name))
+        artellapipe.PlayblastsMgr().register_token(
+            '<{}>'.format(project_name),
+            lambda attrs_dict: project.get_path(), label='Insert {} project path'.format(project_name))
 
         super(PlayblastManager, self).__init__(project=project, config=config)
 
@@ -96,7 +98,8 @@ class PlayblastManager(tool.Tool, object):
         self._main_widget = accordion.AccordionWidget(parent=self)
         self._main_widget.rollout_style = accordion.AccordionStyle.MAYA
 
-        self.preset_widget = presets.PlayblastPreset(project=self._project, inputs_getter=self.get_inputs, parent=self)
+        self.preset_widget = presets.PlayblastPreset(
+            project=self._project, inputs_getter=self.get_inputs, config=self.config, parent=self)
         self._main_widget.add_item('Presets', self.preset_widget, collapsed=False)
 
         self.preview_widget = preview.PlayblastPreview(options=self.get_outputs, validator=self.validate, parent=self)
@@ -108,10 +111,9 @@ class PlayblastManager(tool.Tool, object):
         self.time_range = timerange.TimeRangeWidget(project=self._project)
         self.cameras = cameras.CamerasWidget(project=self._project)
         self.resolution = resolution.ResolutionWidget(project=self._project)
-        self.mask = mask.MaskWidget(project=self._project)
         self.save = save.SaveWidget(project=self._project)
 
-        for widget in [self.cameras, self.resolution, self.time_range, self.mask, self.save]:
+        for widget in [self.cameras, self.resolution, self.time_range, self.save]:
             widget.initialize()
             widget.optionsChanged.connect(self._on_update_settings)
             self.playblastFinished.connect(widget.on_playblast_finished)
@@ -128,8 +130,6 @@ class PlayblastManager(tool.Tool, object):
         self.cameras._on_update_label()
         self.resolution._on_resolution_changed()
 
-        self.playblastStart.connect(self.mask.create_mask)
-
         self.capture_btn = QPushButton('C A P T U R E')
         self.main_layout.addWidget(self.capture_btn)
 
@@ -140,6 +140,8 @@ class PlayblastManager(tool.Tool, object):
         self.capture_btn.clicked.connect(self._on_capture)
         self.preset_widget.configOpened.connect(self.show_config)
         self.preset_widget.presetLoaded.connect(self.apply_inputs)
+
+    def post_attacher_set(self):
         self.apply_inputs(inputs=self._read_configuration())
 
     def validate(self):
@@ -240,11 +242,16 @@ class PlayblastManager(tool.Tool, object):
         Build configuration dialog to store configuration widgets in
         """
 
-        self.config_dialog = PlayblastTemplateConfigurationDialog()
+        self.config_dialog = PlayblastTemplateConfigurationDialog(project=self._project)
 
     def _read_configuration(self):
         inputs = dict()
-        path = self.settings().fileName()
+        settings_file = self.settings()
+        if not settings_file:
+            LOGGER.warning('Impossible to read configuration because settings file does not exists!')
+            return
+
+        path = settings_file.fileName()
         if not os.path.isfile(path) or os.stat(path).st_size == 0:
             return inputs
 
@@ -252,12 +259,10 @@ class PlayblastManager(tool.Tool, object):
             if section == self.objectName().lower():
                 continue
             inputs[section] = dict()
-
-            print('Section: {}'.format(section))
-
-            # props = self.settings.items(section)
-            # for prop in props:
-            #     inputs[section][str(prop[0])] = str(prop[1])
+            settings_file.beginGroup(section)
+            items = settings_file.childKeys() or list()
+            for item in items:
+                inputs[section][str(item)] = settings_file.value(item)
 
         return inputs
 
@@ -293,7 +298,7 @@ class PlayblastManager(tool.Tool, object):
             print('Creating capture')
 
         options['filename'] = filename
-        options['filename'] = capture_scene(options=options)
+        options['filename'] = artellapipe.PlayblastsMgr().capture_scene(options=options)
 
         self.playblastFinished.emit(options)
 
@@ -310,212 +315,18 @@ class PlayblastManager(tool.Tool, object):
         return filename
 
 
-def format_tokens(token_str, attrs_dict):
-    """
-    Replace the tokens with the given strings
-    :param token_str: str, filename of the playbalst with tokens
-    :param attrs_dict: dict, parsed capture options
-    :return: str, formatted filename with all tokens resolved
-    """
-
-    if not token_str:
-        return token_str
-
-    for token, value in _registered_tokens.items():
-        if token in token_str:
-            fn = value['fn']
-            token_str = token_str.replace(token, fn(attrs_dict))
-
-    return token_str
-
-
-def register_token(token, fn, label=''):
-    assert token.startswith('<') and token.endswith('>')
-    assert callable(fn)
-    _registered_tokens[token] = {'fn': fn, 'label': label}
-
-
-def list_tokens():
-    return _registered_tokens.keys()
-
-
-def camera_token(attrs_dict):
-    """
-    Returns short name of camera from options
-    :param attrs_dict: dict, parsed capture options
-    """
-
-    camera = attrs_dict['camera']
-    camera = camera.rsplit('|', 1)[-1]
-    camera = camera.replace(':', '_')
-
-    return camera
-
-
-def parse_current_scene():
-    """
-    Parse current Maya scene looking for settings related with play blasts
-    :return: dict
-    """
-
-    time_control = maya.mel.eval("$gPlayBackSlider = $gPlayBackSlider")
-
-    return {
-        'start_frame': maya.cmds.playbackOptions(query=True, minTime=True),
-        'end_frame': maya.cmds.playbackOptions(query=True, maxTime=True),
-        'width': maya.cmds.getAttr('defaultResolution.width'),
-        'height': maya.cmds.getAttr('defaultResolution.height'),
-        'compression': maya.cmds.optionVar(query='playblastCompression'),
-        'filename': (maya.cmds.optionVar(query='playblastFile') if maya.cmds.optionVar(query='playblastSaveToFile') else None),
-        'format': maya.cmds.optionVar(query='playblastFormat'),
-        'off_scren': (True if maya.cmds.optionVar(query='playblastOffscreen') else False),
-        'show_ornaments': (True if maya.cmds.optionVar(query='playblastShowOrnaments') else False),
-        'quality': maya.cmds.optionVar(query='playblastQuality'),
-        'sound': maya.cmds.timeControl(time_control, query=True, sound=True) or None
-    }
-
-
-def capture_scene(options):
-    """
-    Capturing using scene settings
-    :param options: dict, collection of output options
-    :return: str, path to playblast file
-    """
-
-    filename = options.get('filename', '%TEMP%')
-    LOGGER.info('Capturing to {}'.format(filename))
-    options = options.copy()
-
-    # Force viewer to False in call to capture because we have our own viewer opening call to allow a signal
-    # to trigger between playblast and viewer
-    options['viewer'] = False
-    options.pop('panel', None)
-
-    path = capture(**options)
-    path = playblast.fix_playblast_output_path(path)
-
-    return path
-
-
-def capture(**kwargs):
-    """
-    Creates a playblast in an independent panel
-    :param kwargs:
-    """
-
-    if not tp.is_maya():
-        LOGGER.warning('Playblast is only supported in Maya!')
-        return
-
-    filename = kwargs.get('filename', None)
-    camera = kwargs.get('camera', 'persp')
-    sound = kwargs.get('sound', None)
-    width = kwargs.get('width', tp.Dcc.get_default_render_resolution_width())
-    height = kwargs.get('height', tp.Dcc.get_default_render_resolution_height())
-    format = kwargs.get('format', 'qt')
-    compression = kwargs.get('compression', 'H.264')
-    quality = kwargs.get('quality', 100)
-    maintain_aspect_ratio = kwargs.get('maintain_aspect_ratio', True)
-    frame = kwargs.get('frame', None)
-    start_frame = kwargs.get('start_frame', tp.Dcc.get_start_frame())
-    end_frame = kwargs.get('end_frame', tp.Dcc.get_end_frame())
-    complete_filename = kwargs.get('complete_filename', None)
-    off_screen = kwargs.get('off_screen', False)
-    isolate = kwargs.get('isolate', None)
-    viewer = kwargs.get('viewer', None)
-    show_ornaments = kwargs.get('show_ornaments', True)
-    overwrite = kwargs.get('overwrite', False)
-    frame_padding = kwargs.get('frame_padding', 4)
-    raw_frame_numbers = kwargs.get('raw_frame_numbers', False)
-    camera_options = kwargs.get('camera_options', None)
-    display_options = kwargs.get('display_options', None)
-    viewport_options = kwargs.get('viewport_options', None)
-    viewport2_options = kwargs.get('viewport2_options', None)
-
-    camera = camera or 'persp'
-    if not tp.Dcc.object_exists(camera):
-        raise RuntimeError('Camera does not exists!'.format(camera))
-
-    width = width or tp.Dcc.get_default_render_resolution_width()
-    height = height or tp.Dcc.get_default_render_resolution_height()
-    if maintain_aspect_ratio:
-        ratio = tp.Dcc.get_default_render_resolution_aspect_ratio()
-        height = round(width / ratio)
-
-    if start_frame is None:
-        start_frame = tp.Dcc.get_start_frame()
-    if end_frame is None:
-        end_frame = tp.Dcc.get_end_frame()
-
-    if raw_frame_numbers and frame is None:
-        frame = range(int(start_frame), int(end_frame) + 1)
-
-    playblast_kwargs = dict()
-    if complete_filename:
-        playblast_kwargs['completeFilename'] = complete_filename
-    if frame is not None:
-        playblast_kwargs['frame'] = frame
-    if sound is not None:
-        playblast_kwargs['sound'] = sound
-
-    if frame and raw_frame_numbers:
-        check = frame if isinstance(frame, (list, tuple)) else [frame]
-        if any(f < 0 for f in check):
-            raise RuntimeError('Negative frames are not supported with raw frame numbers and explicit frame numbers')
-
-    tp.Dcc.set_current_frame(tp.Dcc.get_current_frame())
-
-    padding = 10
-    with gui.create_independent_panel(width=width + padding, height=height + padding, off_screen=off_screen) as panel:
-        tp.Dcc.focus(panel)
-        with contextlib.nested(
-                viewport.applied_viewport_options(viewport_options, panel),
-                cameras.applied_camera_options(camera_options, panel),
-                displayoptions.applied_display_options(display_options),
-                viewport.applied_viewport2_options(viewport2_options),
-                gui.disable_inview_messages(),
-                gui.maintain_camera_on_panel(panel=panel, camera=camera),
-                gui.isolated_nodes(nodes=isolate, panel=panel),
-                gui.reset_time()
-        ):
-            # Only image format supports raw frame numbers
-            # so we ignore the state when calling it with a movie
-            # format
-            if format != "image" and raw_frame_numbers:
-                LOGGER.warning("Capturing to image format with raw frame numbers is not supported. Ignoring raw frame numbers...")
-                raw_frame_numbers = False
-
-            output = maya.cmds.playblast(
-                compression=compression,
-                format=format,
-                percent=100,
-                quality=quality,
-                viewer=viewer,
-                startTime=start_frame,
-                endTime=end_frame,
-                offScreen=off_screen,
-                showOrnaments=show_ornaments,
-                forceOverwrite=overwrite,
-                filename=filename,
-                widthHeight=[width, height],
-                rawFrameNumbers=raw_frame_numbers,
-                framePadding=frame_padding,
-                **playblast_kwargs
-            )
-
-        return output
-
-
 class PlayblastTemplateConfigurationDialog(dialog.ArtellaDialog, object):
 
-    def __init__(self, parent=None, **kwargs):
+    def __init__(self, project, parent=None, **kwargs):
 
         self.playblast_config_widgets = list()
 
         super(PlayblastTemplateConfigurationDialog, self).__init__(
+
             name='PlayblastTemplateConfigurationDialog',
             title='Artella - Playblast Template Configuration',
             parent=parent,
+            project=project,
             **kwargs
         )
 
@@ -548,10 +359,3 @@ class PlayblastTemplateConfigurationDialog(dialog.ArtellaDialog, object):
             self.playblast_config_widgets.append(widget)
             if item is not None:
                 widget.labelChanged.connect(item.setTitle)
-
-
-def run(project):
-    win = PlayblastManager(project=project)
-    win.show()
-
-    return win

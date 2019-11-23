@@ -12,8 +12,6 @@ __license__ = "MIT"
 __maintainer__ = "Tomas Poveda"
 __email__ = "tpovedatd@gmail.com"
 
-import  contextlib
-
 from Qt.QtCore import *
 from Qt.QtWidgets import *
 
@@ -21,42 +19,10 @@ import tpDccLib as tp
 
 from tpQtLib.widgets import color
 
-from artellapipe.tools.playblastmanager.core import defines, plugin
+from artellapipe.tools.playblastmanager.core import plugin
 
 if tp.is_maya():
     import tpMayaLib as maya
-
-
-@contextlib.contextmanager
-def applied_display_options(options):
-    """
-    Context manager for setting background color display options
-    :param options: dict
-    """
-
-    options = dict(defines.DisplayOptions, **(options or {}))
-    colors = ['background', 'backgroundTop', 'backgroundBottom']
-    preferences = ['displayGradient']
-    original = dict()
-
-    for clr in colors:
-        original[clr] = maya.cmds.displayRGBColor(clr, query=True) or list()
-    for preference in preferences:
-        original[preference] = maya.cmds.displayPref(query=True, **{preference: True})
-    for clr in colors:
-        value = options[clr]
-        maya.cmds.displayRGBColor(clr, *value)
-    for preference in preferences:
-        value = options[preference]
-        maya.cmds.displayPref(**{preference: value})
-
-    try:
-        yield
-    finally:
-        for clr in colors:
-            maya.cmds.displayRGBColor(clr, *original[clr])
-        for preference in preferences:
-            maya.cmds.displayPref(**{preference: original[preference]})
 
 
 class DisplayOptionsWidget(plugin.PlayblastPlugin, object):

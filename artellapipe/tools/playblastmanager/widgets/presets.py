@@ -24,6 +24,7 @@ from tpPyUtils import jsonio, fileio, folder as folder_utils
 
 from tpQtLib.core import base
 
+import artellapipe
 from artellapipe.utils import resource
 
 LOGGER = logging.getLogger()
@@ -39,18 +40,24 @@ class PlayblastPreset(base.BaseWidget, object):
 
     registered_paths = list()
 
-    def __init__(self, project, inputs_getter, parent=None):
+    def __init__(self, project, inputs_getter, config, parent=None):
 
         self._project = project
+        self._config = config
         self._inputs_getter = inputs_getter
 
         super(PlayblastPreset, self).__init__(parent=parent)
-        presets_folder = project.get_playblast_presets_folder()
-        print('PRESETS FOLDER: {}'.format(presets_folder))
+        presets_folders = artellapipe.PlayblastsMgr().get_presets_paths()
+        if not presets_folders:
+            LOGGER.warning('No Presets folders found!')
+            return
+
         # if not os.path.exists(presets_folder):
         #     project.logger.debug('Presets Path not found! Trying to sync through Artella!')
         #     syncdialog.SyncPath(paths=[os.path.dirname(os.path.dirname(presets_folder))]).sync()
-        self.register_preset_path(presets_folder)
+
+        for preset_folder in presets_folders:
+            self.register_preset_path(preset_folder)
 
         self._process_presets()
 
@@ -291,7 +298,7 @@ class PlayblastPreset(base.BaseWidget, object):
         :return:
         """
 
-        folder_utils.open_folder(os.path.dirname(self._default_browse_path()))
+        folder_utils.open_folder(self._default_browse_path())
 
     def _process_presets(self):
         """
