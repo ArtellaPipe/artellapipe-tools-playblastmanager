@@ -107,7 +107,14 @@ class PlayblastPreset(base.BaseWidget, object):
         self._open_templates_folder_btn.setToolTip('Open Templates Folder')
         self._open_templates_folder_btn.setStatusTip('Open Templates Folder')
 
-        for widget in [self._presets, self._save_btn, self._load_btn, self._preset_config, vertical_separator, self._open_templates_folder_btn]:
+        for widget in [
+            self._presets,
+            self._save_btn,
+            self._load_btn,
+            self._preset_config,
+            vertical_separator,
+            self._open_templates_folder_btn
+        ]:
             self.main_layout.addWidget(widget)
 
     def setup_signals(self):

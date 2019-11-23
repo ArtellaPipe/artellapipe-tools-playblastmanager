@@ -50,7 +50,11 @@ class TimeRangeWidget(plugin.PlayblastPlugin, object):
         super(TimeRangeWidget, self).ui()
 
         self.mode = QComboBox()
-        self.mode.addItems([TimeRanges.RANGE_TIME_SLIDER, TimeRanges.RANGE_START_END, TimeRanges.CURRENT_FRAME, TimeRanges.CUSTOM_FRAMES])
+        self.mode.addItems(
+            [TimeRanges.RANGE_TIME_SLIDER,
+             TimeRanges.RANGE_START_END,
+             TimeRanges.CURRENT_FRAME,
+             TimeRanges.CUSTOM_FRAMES])
 
         self.start = QSpinBox()
         self.start.setRange(-sys.maxint, sys.maxint)

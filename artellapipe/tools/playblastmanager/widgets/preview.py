@@ -13,6 +13,7 @@ __maintainer__ = "Tomas Poveda"
 __email__ = "tpovedatd@gmail.com"
 
 import os
+import logging
 import tempfile
 
 from Qt.QtCore import *
@@ -26,13 +27,15 @@ import tpDccLib as tp
 from tpQtLib.core import base
 from tpQtLib.widgets import label
 
+from artellapipe.utils import resource
+
 if tp.is_maya():
     from tpMayaLib.core import decorators as maya_decorators
     no_undo_decorator = maya_decorators.SkipUndo
 else:
     no_undo_decorator = decorators.empty_decorator_context
 
-from artellapipe.utils import resource
+LOGGER = logging.getLogger()
 
 
 class PlayblastPreview(base.BaseWidget, object):
@@ -73,7 +76,8 @@ class PlayblastPreview(base.BaseWidget, object):
         # self.open_playblasts_folder_btn.setFixedHeight(25)
         # self.open_playblasts_folder_btn.setIconSize(QSize(25, 25))
         # self.open_playblasts_folder_btn.setParent(self.preview)
-        # self.open_playblasts_folder_btn.setStyleSheet("background-color: rgba(255, 255, 255, 0); border: 0px solid rgba(255,255,255,0);")
+        # self.open_playblasts_folder_btn.setStyleSheet(
+        # "background-color: rgba(255, 255, 255, 0); border: 0px solid rgba(255,255,255,0);")
         # self.open_playblasts_folder_btn.move(5, 5)
 
         sync_icon = resource.ResourceManager().icon('sync')
@@ -85,7 +89,8 @@ class PlayblastPreview(base.BaseWidget, object):
         self.sync_preview_btn.setToolTip('Sync Preview')
         self.sync_preview_btn.setStatusTip('Sync Preview')
         self.sync_preview_btn.setParent(self.preview)
-        self.sync_preview_btn.setStyleSheet("background-color: rgba(255, 255, 255, 0); border: 0px solid rgba(255,255,255,0);")
+        self.sync_preview_btn.setStyleSheet(
+            "background-color: rgba(255, 255, 255, 0); border: 0px solid rgba(255,255,255,0);")
         # self.sync_preview_btn.move(32, 5)
         self.sync_preview_btn.move(5, 5)
 
@@ -133,7 +138,7 @@ class PlayblastPreview(base.BaseWidget, object):
 
             frame_name = playblastmanager.capture(**options)
             if not frame_name:
-                artellapipe.logger.warning('Preview failed!')
+                LOGGER.warning('Preview failed!')
                 return
 
             image = QPixmap(frame_name)

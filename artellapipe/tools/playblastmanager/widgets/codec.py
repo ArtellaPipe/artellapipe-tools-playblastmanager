@@ -80,8 +80,11 @@ class CodecWidget(plugin.PlayblastPlugin, object):
          :return: dict
          """
 
-        return {'format': self.format.currentText(), 'compression': self.compression.currentText(), 'quality': self.quality.value()}
-
+        return {
+            'format': self.format.currentText(),
+            'compression': self.compression.currentText(),
+            'quality': self.quality.value()
+        }
 
     def apply_inputs(self, attrs_dict):
         """

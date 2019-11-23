@@ -48,7 +48,8 @@ class ResolutionWidget(plugin.PlayblastPlugin, object):
         super(ResolutionWidget, self).ui()
 
         self.mode = QComboBox()
-        self.mode.addItems([ScaleSettings.SCALE_WINDOW, ScaleSettings.SCALE_RENDER_SETTINGS, ScaleSettings.SCALE_CUSTOM])
+        self.mode.addItems(
+            [ScaleSettings.SCALE_WINDOW, ScaleSettings.SCALE_RENDER_SETTINGS, ScaleSettings.SCALE_CUSTOM])
         self.mode.setCurrentIndex(1)
 
         self.resolution = QWidget()

@@ -178,7 +178,8 @@ class PlayblastManager(artellapipe.Tool, object):
         for widget in config_widgets:
             widget_inputs = widget.get_inputs(as_preset=as_preset)
             if not isinstance(widget_inputs, dict):
-                LOGGER.warning('Widget inputs are not a valid dictionary "{0}" : "{1}"'.format(widget.id, widget_inputs))
+                LOGGER.warning(
+                    'Widget inputs are not a valid dictionary "{0}" : "{1}"'.format(widget.id, widget_inputs))
                 return
             if not widget_inputs:
                 continue

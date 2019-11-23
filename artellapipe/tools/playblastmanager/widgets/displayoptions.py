@@ -147,14 +147,14 @@ class DisplayOptionsWidget(plugin.PlayblastPlugin, object):
         :return: solstice_color.ColorPicker
         """
 
-        l = QVBoxLayout()
+        color_layout = QVBoxLayout()
         lbl = QLabel(self.LABELS[label])
         color_picker = color.ColorPicker()
         color_picker.color = default
-        l.addWidget(lbl)
-        l.addWidget(color_picker)
-        l.setAlignment(lbl, Qt.AlignCenter)
-        layout.addLayout(l)
+        color_layout.addWidget(lbl)
+        color_layout.addWidget(color_picker)
+        color_layout.setAlignment(lbl, Qt.AlignCenter)
+        layout.addLayout(color_layout)
         color_picker.valueChanged.connect(self.optionsChanged)
         self._colors[label] = color_picker
 
