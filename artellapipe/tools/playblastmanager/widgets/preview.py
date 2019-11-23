@@ -27,6 +27,7 @@ import tpDccLib as tp
 from tpQtLib.core import base
 from tpQtLib.widgets import label
 
+import artellapipe
 from artellapipe.utils import resource
 
 if tp.is_maya():
@@ -107,8 +108,6 @@ class PlayblastPreview(base.BaseWidget, object):
         Refresh playblast preview
         """
 
-        from artellapipe.tools.playblastmanager.core import playblastmanager
-
         frame = tp.Dcc.get_current_frame()
 
         # When play blasting outside of an undo queue next undo will trigger a reset to frame 0
@@ -136,7 +135,7 @@ class PlayblastPreview(base.BaseWidget, object):
             options['compression'] = 'jpg'
             options['sound'] = None
 
-            frame_name = playblastmanager.capture(**options)
+            frame_name = artellapipe.PlayblastsMgr().capture(**options)
             if not frame_name:
                 LOGGER.warning('Preview failed!')
                 return
