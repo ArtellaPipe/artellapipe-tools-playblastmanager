@@ -1,0 +1,7 @@
+artellapipe.tools.playblastmanager.widgets.resolution module
+============================================================
+
+.. automodule:: artellapipe.tools.playblastmanager.widgets.resolution
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,7 @@
+artellapipe.tools.playblastmanager.widgets.codec module
+=======================================================
+
+.. automodule:: artellapipe.tools.playblastmanager.widgets.codec
+   :members:
+   :undoc-members:
+   :show-inheritance:

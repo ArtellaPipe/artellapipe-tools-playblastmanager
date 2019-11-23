@@ -1,0 +1,7 @@
+artellapipe.tools.playblastmanager.widgets.renderer module
+==========================================================
+
+.. automodule:: artellapipe.tools.playblastmanager.widgets.renderer
+   :members:
+   :undoc-members:
+   :show-inheritance:

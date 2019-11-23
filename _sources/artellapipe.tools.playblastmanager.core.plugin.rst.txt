@@ -1,0 +1,7 @@
+artellapipe.tools.playblastmanager.core.plugin module
+=====================================================
+
+.. automodule:: artellapipe.tools.playblastmanager.core.plugin
+   :members:
+   :undoc-members:
+   :show-inheritance:

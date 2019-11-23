@@ -1,0 +1,19 @@
+artellapipe.tools.playblastmanager.core package
+===============================================
+
+Submodules
+----------
+
+.. toctree::
+
+   artellapipe.tools.playblastmanager.core.defines
+   artellapipe.tools.playblastmanager.core.playblastmanager
+   artellapipe.tools.playblastmanager.core.plugin
+
+Module contents
+---------------
+
+.. automodule:: artellapipe.tools.playblastmanager.core
+   :members:
+   :undoc-members:
+   :show-inheritance:

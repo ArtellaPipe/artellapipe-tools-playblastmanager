@@ -1,0 +1,7 @@
+artellapipe.tools.playblastmanager.widgets.cameras module
+=========================================================
+
+.. automodule:: artellapipe.tools.playblastmanager.widgets.cameras
+   :members:
+   :undoc-members:
+   :show-inheritance:

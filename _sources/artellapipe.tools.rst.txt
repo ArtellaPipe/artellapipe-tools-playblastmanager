@@ -1,0 +1,17 @@
+artellapipe.tools package
+=========================
+
+Subpackages
+-----------
+
+.. toctree::
+
+   artellapipe.tools.playblastmanager
+
+Module contents
+---------------
+
+.. automodule:: artellapipe.tools
+   :members:
+   :undoc-members:
+   :show-inheritance:
