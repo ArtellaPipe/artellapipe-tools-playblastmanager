@@ -53,6 +53,7 @@ class CamerasWidget(plugin.PlayblastPlugin, object):
         super(CamerasWidget, self).ui()
 
         self.cameras = QComboBox()
+        self.cameras.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         self.cameras.setMinimumWidth(200)
 
         self.get_active = QPushButton('Get Active')
