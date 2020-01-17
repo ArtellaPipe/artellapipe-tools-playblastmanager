@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>artellapipe.tools.playblastmanager.widgets.options module &mdash; artellapipe-core 0.0.l documentation</title>
+  <title>artellapipe.tools.playblastmanager.plugins.codec module &mdash; artellapipe-core 0.0.l documentation</title>
   
 
   
@@ -35,8 +35,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="artellapipe.tools.playblastmanager.widgets.panzoom module" href="artellapipe.tools.playblastmanager.widgets.panzoom.html" />
-    <link rel="prev" title="artellapipe.tools.playblastmanager.widgets.displayoptions module" href="artellapipe.tools.playblastmanager.widgets.displayoptions.html" /> 
+    <link rel="next" title="artellapipe.tools.playblastmanager.plugins.displayoptions module" href="artellapipe.tools.playblastmanager.plugins.displayoptions.html" />
+    <link rel="prev" title="artellapipe.tools.playblastmanager.plugins.cameras module" href="artellapipe.tools.playblastmanager.plugins.cameras.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -150,15 +150,15 @@
         
           <li><a href="artellapipe.tools.playblastmanager.html">artellapipe.tools.playblastmanager package</a> &raquo;</li>
         
-          <li><a href="artellapipe.tools.playblastmanager.widgets.html">artellapipe.tools.playblastmanager.widgets package</a> &raquo;</li>
+          <li><a href="artellapipe.tools.playblastmanager.plugins.html">artellapipe.tools.playblastmanager.plugins package</a> &raquo;</li>
         
-      <li>artellapipe.tools.playblastmanager.widgets.options module</li>
+      <li>artellapipe.tools.playblastmanager.plugins.codec module</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/artellapipe.tools.playblastmanager.widgets.options.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/artellapipe.tools.playblastmanager.plugins.codec.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -172,74 +172,75 @@
 
            <div itemprop="articleBody">
             
-  <div class="section" id="module-artellapipe.tools.playblastmanager.widgets.options">
-<span id="artellapipe-tools-playblastmanager-widgets-options-module"></span><h1>artellapipe.tools.playblastmanager.widgets.options module<a class="headerlink" href="#module-artellapipe.tools.playblastmanager.widgets.options" title="Permalink to this headline">¶</a></h1>
-<p>Module that contains implementation for Viewport Plugin</p>
+  <div class="section" id="module-artellapipe.tools.playblastmanager.plugins.codec">
+<span id="artellapipe-tools-playblastmanager-plugins-codec-module"></span><h1>artellapipe.tools.playblastmanager.plugins.codec module<a class="headerlink" href="#module-artellapipe.tools.playblastmanager.plugins.codec" title="Permalink to this headline">¶</a></h1>
+<p>Module that contains implementation for Playblast Codec Plugin</p>
 <dl class="class">
-<dt id="artellapipe.tools.playblastmanager.widgets.options.PlayblastOptionsWidget">
-<em class="property">class </em><code class="sig-prename descclassname">artellapipe.tools.playblastmanager.widgets.options.</code><code class="sig-name descname">PlayblastOptionsWidget</code><span class="sig-paren">(</span><em class="sig-param">project</em>, <em class="sig-param">parent=None</em><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.widgets.options.PlayblastOptionsWidget" title="Permalink to this definition">¶</a></dt>
+<dt id="artellapipe.tools.playblastmanager.plugins.codec.CodecWidget">
+<em class="property">class </em><code class="sig-prename descclassname">artellapipe.tools.playblastmanager.plugins.codec.</code><code class="sig-name descname">CodecWidget</code><span class="sig-paren">(</span><em class="sig-param">project</em>, <em class="sig-param">parent=None</em><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.plugins.codec.CodecWidget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="artellapipe.tools.playblastmanager.core.plugin.html#artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin" title="artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
-<dt id="artellapipe.tools.playblastmanager.widgets.options.PlayblastOptionsWidget.apply_inputs">
-<code class="sig-name descname">apply_inputs</code><span class="sig-paren">(</span><em class="sig-param">attrs_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.widgets.options.PlayblastOptionsWidget.apply_inputs" title="Permalink to this definition">¶</a></dt>
+<dt id="artellapipe.tools.playblastmanager.plugins.codec.CodecWidget.apply_inputs">
+<code class="sig-name descname">apply_inputs</code><span class="sig-paren">(</span><em class="sig-param">attrs_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.plugins.codec.CodecWidget.apply_inputs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Overrides base ArtellaPlayblastPlugin apply_inputs function
 Applies the given dict of attributes to the widget
 :param attrs_dict: dict</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="artellapipe.tools.playblastmanager.widgets.options.PlayblastOptionsWidget.get_defaults">
-<code class="sig-name descname">get_defaults</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.widgets.options.PlayblastOptionsWidget.get_defaults" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="artellapipe.tools.playblastmanager.widgets.options.PlayblastOptionsWidget.get_inputs">
-<code class="sig-name descname">get_inputs</code><span class="sig-paren">(</span><em class="sig-param">as_preset=False</em><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.widgets.options.PlayblastOptionsWidget.get_inputs" title="Permalink to this definition">¶</a></dt>
+<dt id="artellapipe.tools.playblastmanager.plugins.codec.CodecWidget.get_inputs">
+<code class="sig-name descname">get_inputs</code><span class="sig-paren">(</span><em class="sig-param">as_preset=False</em><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.plugins.codec.CodecWidget.get_inputs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Overrides base ArtellaPlayblastPlugin get_inputs function
 Returns a dict with proper input variables as keys of the dictionary
 :return: dict</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="artellapipe.tools.playblastmanager.widgets.options.PlayblastOptionsWidget.get_main_layout">
-<code class="sig-name descname">get_main_layout</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.widgets.options.PlayblastOptionsWidget.get_main_layout" title="Permalink to this definition">¶</a></dt>
+<dt id="artellapipe.tools.playblastmanager.plugins.codec.CodecWidget.get_main_layout">
+<code class="sig-name descname">get_main_layout</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.plugins.codec.CodecWidget.get_main_layout" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function that generates the main layout used by the widget
 Override if necessary on new widgets
 :return: QLayout</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="artellapipe.tools.playblastmanager.widgets.options.PlayblastOptionsWidget.get_outputs">
-<code class="sig-name descname">get_outputs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.widgets.options.PlayblastOptionsWidget.get_outputs" title="Permalink to this definition">¶</a></dt>
+<dt id="artellapipe.tools.playblastmanager.plugins.codec.CodecWidget.get_outputs">
+<code class="sig-name descname">get_outputs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.plugins.codec.CodecWidget.get_outputs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Overrides base ArtellaPlayblastPlugin get_outputs function
 Returns the outputs variables of the Playblast widget as dict
 :return: dict</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="artellapipe.tools.playblastmanager.widgets.options.PlayblastOptionsWidget.id">
-<code class="sig-name descname">id</code><em class="property"> = 'Options'</em><a class="headerlink" href="#artellapipe.tools.playblastmanager.widgets.options.PlayblastOptionsWidget.id" title="Permalink to this definition">¶</a></dt>
+<dt id="artellapipe.tools.playblastmanager.plugins.codec.CodecWidget.id">
+<code class="sig-name descname">id</code><em class="property"> = 'Codec'</em><a class="headerlink" href="#artellapipe.tools.playblastmanager.plugins.codec.CodecWidget.id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="artellapipe.tools.playblastmanager.widgets.options.PlayblastOptionsWidget.label">
-<code class="sig-name descname">label</code><em class="property"> = 'Options'</em><a class="headerlink" href="#artellapipe.tools.playblastmanager.widgets.options.PlayblastOptionsWidget.label" title="Permalink to this definition">¶</a></dt>
+<dt id="artellapipe.tools.playblastmanager.plugins.codec.CodecWidget.label">
+<code class="sig-name descname">label</code><em class="property"> = 'Codec'</em><a class="headerlink" href="#artellapipe.tools.playblastmanager.plugins.codec.CodecWidget.label" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="artellapipe.tools.playblastmanager.widgets.options.PlayblastOptionsWidget.setup_signals">
-<code class="sig-name descname">setup_signals</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.widgets.options.PlayblastOptionsWidget.setup_signals" title="Permalink to this definition">¶</a></dt>
+<dt id="artellapipe.tools.playblastmanager.plugins.codec.CodecWidget.refresh">
+<code class="sig-name descname">refresh</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.plugins.codec.CodecWidget.refresh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function that refreshes plugin UI</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="artellapipe.tools.playblastmanager.plugins.codec.CodecWidget.setup_signals">
+<code class="sig-name descname">setup_signals</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.plugins.codec.CodecWidget.setup_signals" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function that set up signals of the widget</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="artellapipe.tools.playblastmanager.widgets.options.PlayblastOptionsWidget.staticMetaObject">
-<code class="sig-name descname">staticMetaObject</code><em class="property"> = &lt;PySide2.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#artellapipe.tools.playblastmanager.widgets.options.PlayblastOptionsWidget.staticMetaObject" title="Permalink to this definition">¶</a></dt>
+<dt id="artellapipe.tools.playblastmanager.plugins.codec.CodecWidget.staticMetaObject">
+<code class="sig-name descname">staticMetaObject</code><em class="property"> = &lt;PySide2.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#artellapipe.tools.playblastmanager.plugins.codec.CodecWidget.staticMetaObject" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="artellapipe.tools.playblastmanager.widgets.options.PlayblastOptionsWidget.ui">
-<code class="sig-name descname">ui</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.widgets.options.PlayblastOptionsWidget.ui" title="Permalink to this definition">¶</a></dt>
+<dt id="artellapipe.tools.playblastmanager.plugins.codec.CodecWidget.ui">
+<code class="sig-name descname">ui</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.plugins.codec.CodecWidget.ui" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function that sets up the ui of the widget
 Override it on new widgets (but always call super)</p>
 </dd></dl>
@@ -260,10 +261,10 @@ Override it on new widgets (but always call super)</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="artellapipe.tools.playblastmanager.widgets.panzoom.html" class="btn btn-neutral float-right" title="artellapipe.tools.playblastmanager.widgets.panzoom module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="artellapipe.tools.playblastmanager.plugins.displayoptions.html" class="btn btn-neutral float-right" title="artellapipe.tools.playblastmanager.plugins.displayoptions module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="artellapipe.tools.playblastmanager.widgets.displayoptions.html" class="btn btn-neutral float-left" title="artellapipe.tools.playblastmanager.widgets.displayoptions module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="artellapipe.tools.playblastmanager.plugins.cameras.html" class="btn btn-neutral float-left" title="artellapipe.tools.playblastmanager.plugins.cameras module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

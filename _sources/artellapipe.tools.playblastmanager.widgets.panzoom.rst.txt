@@ -1,7 +1,0 @@
-artellapipe.tools.playblastmanager.widgets.panzoom module
-=========================================================
-
-.. automodule:: artellapipe.tools.playblastmanager.widgets.panzoom
-   :members:
-   :undoc-members:
-   :show-inheritance:

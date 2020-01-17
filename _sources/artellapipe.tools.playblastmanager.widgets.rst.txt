@@ -6,18 +6,8 @@ Submodules
 
 .. toctree::
 
-   artellapipe.tools.playblastmanager.widgets.cameras
-   artellapipe.tools.playblastmanager.widgets.codec
-   artellapipe.tools.playblastmanager.widgets.displayoptions
-   artellapipe.tools.playblastmanager.widgets.options
-   artellapipe.tools.playblastmanager.widgets.panzoom
    artellapipe.tools.playblastmanager.widgets.presets
    artellapipe.tools.playblastmanager.widgets.preview
-   artellapipe.tools.playblastmanager.widgets.renderer
-   artellapipe.tools.playblastmanager.widgets.resolution
-   artellapipe.tools.playblastmanager.widgets.save
-   artellapipe.tools.playblastmanager.widgets.timerange
-   artellapipe.tools.playblastmanager.widgets.viewport
 
 Module contents
 ---------------

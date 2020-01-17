@@ -1,7 +1,0 @@
-artellapipe.tools.playblastmanager.widgets.save module
-======================================================
-
-.. automodule:: artellapipe.tools.playblastmanager.widgets.save
-   :members:
-   :undoc-members:
-   :show-inheritance:

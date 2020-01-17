@@ -1,0 +1,7 @@
+artellapipe.tools.playblastmanager.plugins.timerange module
+===========================================================
+
+.. automodule:: artellapipe.tools.playblastmanager.plugins.timerange
+   :members:
+   :undoc-members:
+   :show-inheritance:

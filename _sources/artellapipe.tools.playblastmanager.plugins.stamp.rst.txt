@@ -1,0 +1,7 @@
+artellapipe.tools.playblastmanager.plugins.stamp module
+=======================================================
+
+.. automodule:: artellapipe.tools.playblastmanager.plugins.stamp
+   :members:
+   :undoc-members:
+   :show-inheritance:

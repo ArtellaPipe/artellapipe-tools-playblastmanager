@@ -1,6 +1,23 @@
 artellapipe.tools.playblastmanager.plugins package
 ==================================================
 
+Submodules
+----------
+
+.. toctree::
+
+   artellapipe.tools.playblastmanager.plugins.cameras
+   artellapipe.tools.playblastmanager.plugins.codec
+   artellapipe.tools.playblastmanager.plugins.displayoptions
+   artellapipe.tools.playblastmanager.plugins.options
+   artellapipe.tools.playblastmanager.plugins.panzoom
+   artellapipe.tools.playblastmanager.plugins.renderer
+   artellapipe.tools.playblastmanager.plugins.resolution
+   artellapipe.tools.playblastmanager.plugins.save
+   artellapipe.tools.playblastmanager.plugins.stamp
+   artellapipe.tools.playblastmanager.plugins.timerange
+   artellapipe.tools.playblastmanager.plugins.viewport
+
 Module contents
 ---------------
 
