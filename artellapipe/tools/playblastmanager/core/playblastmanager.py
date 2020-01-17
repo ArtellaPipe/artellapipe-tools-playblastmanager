@@ -146,8 +146,6 @@ class PlayblastManager(artellapipe.Tool, object):
         self.main_layout.addWidget(self._stack)
         self.main_layout.addWidget(self.capture_btn)
 
-
-        #
         # self.default_options = DefaultPlayblastOptions(project=self._project)
         # self.playblast_widgets.append(self.default_options)
         #
@@ -173,7 +171,6 @@ class PlayblastManager(artellapipe.Tool, object):
         # # We force the reload of the camera plugin title
         # self.cameras._on_update_label()
         # self.resolution._on_resolution_changed()
-
 
     # def setup_signals(self):
     #     self.capture_btn.clicked.connect(self._on_capture)
