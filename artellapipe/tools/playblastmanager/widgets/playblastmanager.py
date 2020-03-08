@@ -234,12 +234,14 @@ class PlayblastManager(artellapipe.ToolWidget, object):
         for playblast_plugin in self._plugins:
             if playblast_plugin.id in inputs:
                 LOGGER.warning(
-                    'Cannot get inputs from plugin "{}" because Playblast widget/plugin has been already processed!'.format(playblast_plugin.id))
+                    'Cannot get inputs from plugin "{}" because Playblast widget/plugin '
+                    'has been already processed!'.format(playblast_plugin.id))
                 continue
             plugin_inputs = playblast_plugin.get_inputs(as_preset=as_preset)
             if not isinstance(plugin_inputs, dict):
                 LOGGER.warning(
-                    'Plyablast plugin inputs are not a valid dictionary "{0}" : "{1}"'.format(playblast_plugin.id, plugin_inputs))
+                    'Plyablast plugin inputs are not a valid dictionary "{0}" : "{1}"'.format(
+                        playblast_plugin.id, plugin_inputs))
                 continue
             if not plugin_inputs:
                 continue
@@ -428,7 +430,8 @@ class PlayblastManager(artellapipe.ToolWidget, object):
             filename = '{}{}'.format(os.path.splitext(filename)[0], out_ext)
             do_stamp = options.get('enable_stamp', False)
             if do_stamp:
-                filename = artellapipe.PlayblastsMgr().stamp_playblast(options['filename'], filename, extra_dict=options)
+                filename = artellapipe.PlayblastsMgr().stamp_playblast(
+                    options['filename'], filename, extra_dict=options)
             else:
                 shutil.move(options['filename'], filename)
         try:
@@ -466,7 +469,6 @@ class PlayblastManager(artellapipe.ToolWidget, object):
                 LOGGER.warning('Preview file to upload does not exists: "{}"'.format(file_to_upload))
 
             return True
-
 
         self.playblastFinished.emit(options)
 
