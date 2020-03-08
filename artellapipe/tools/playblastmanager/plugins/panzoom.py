@@ -22,10 +22,12 @@ class PanZoomWidget(plugin.PlayblastPlugin, object):
     Allows user to set playblast display settings
     """
 
-    id = 'Pan/Zoom'
+    id = 'PanZoom'
+    label = 'Pan/Zoom'
+    collapsed = True
 
-    def __init__(self, project, parent=None):
-        super(PanZoomWidget, self).__init__(project=project, parent=parent)
+    def __init__(self, project, config, parent=None):
+        super(PanZoomWidget, self).__init__(project=project, config=config, parent=parent)
 
     def get_main_layout(self):
         main_layout = QHBoxLayout()

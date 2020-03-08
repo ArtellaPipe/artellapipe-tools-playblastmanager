@@ -20,13 +20,12 @@ from functools import partial
 from Qt.QtCore import *
 from Qt.QtWidgets import *
 
-from tpPyUtils import osplatform
+from tpDcc.libs.python import osplatform
 
-import tpDccLib as tp
+import tpDcc as tp
 
-from tpQtLib.widgets import splitters
+from tpDcc.libs.qt.widgets import splitters
 
-from artellapipe.utils import resource
 from artellapipe.tools.playblastmanager.core import plugin
 
 LOGGER = logging.getLogger()
@@ -65,11 +64,11 @@ class SaveWidget(plugin.PlayblastPlugin, object):
     id = 'Save'
     max_recent_playblasts = 5
 
-    def __init__(self, project, parent=None):
+    def __init__(self, project, config, parent=None):
 
         self._recent_playblasts = list()
 
-        super(SaveWidget, self).__init__(project=project, parent=parent)
+        super(SaveWidget, self).__init__(project=project, config=config, parent=parent)
 
     def get_main_layout(self):
         main_layout = QVBoxLayout()
@@ -120,7 +119,7 @@ class SaveWidget(plugin.PlayblastPlugin, object):
         self.file_path.setStatusTip(tip)
         self.file_path.setContextMenuPolicy(Qt.CustomContextMenu)
         self.file_path.customContextMenuRequested.connect(self._on_show_token_menu)
-        browse_icon = resource.ResourceManager().icon('open')
+        browse_icon = tp.ResourcesMgr().icon('open')
         self.browse = QPushButton()
         self.browse.setIcon(browse_icon)
         self.browse.setFixedWidth(30)

@@ -17,13 +17,14 @@ import logging.config
 
 from Qt.QtWidgets import *
 
-import tpDccLib as tp
+import tpDcc as tp
 
+import artellapipe
 from artellapipe.tools.playblastmanager.core import defines, plugin
 
 if tp.is_maya():
-    import tpMayaLib as maya
-    from tpMayaLib.core import gui
+    import tpDcc.dccs.maya as maya
+    from tpDcc.dccs.maya.core import gui
 
 LOGGER = logging.getLogger()
 
@@ -33,14 +34,16 @@ class ViewportOptionsWidget(plugin.PlayblastPlugin, object):
     Allows user to set playblast display settings
     """
 
-    id = 'Viewport Options'
+    id = 'ViewportOptions'
+    label = 'Viewport Options'
+    collapsed = True
 
-    def __init__(self, project, parent=None):
+    def __init__(self, project, config, parent=None):
 
         self.show_type_actions = list()
-        self.show_types = self.get_show_object_tyes()
+        self.show_types = dict()
 
-        super(ViewportOptionsWidget, self).__init__(project=project, parent=parent)
+        super(ViewportOptionsWidget, self).__init__(project=project, config=config, parent=parent)
 
         self.setObjectName(self.label)
 
@@ -52,6 +55,8 @@ class ViewportOptionsWidget(plugin.PlayblastPlugin, object):
 
     def ui(self):
         super(ViewportOptionsWidget, self).ui()
+
+        self.show_types = self.get_show_object_tyes()
 
         menus_layout = QHBoxLayout()
 
@@ -68,7 +73,7 @@ class ViewportOptionsWidget(plugin.PlayblastPlugin, object):
 
         cbx_layout = QGridLayout()
         self.high_quality = QCheckBox()
-        self.high_quality.setText('Force Viewport 2.09 + AA')
+        self.high_quality.setText('Force Viewport 2.0 + AA')
         self.override_viewport = QCheckBox('Override Viewport Settings')
         self.override_viewport.setChecked(True)
         self.two_sided_lighting = QCheckBox('Two Sided Lighting')
@@ -101,9 +106,9 @@ class ViewportOptionsWidget(plugin.PlayblastPlugin, object):
         inputs = {
             'high_quality': self.high_quality.isChecked(),
             'override_viewport_options': self.override_viewport.isChecked(),
-            'display_lights': self.display_light_menu.currentIndex(),
+            'displayLights': self.display_light_menu.currentIndex(),
             'shadows': self.shadows.isChecked(),
-            'two_sided_lighting': self.two_sided_lighting.isChecked()
+            'twoSidedLighting': self.two_sided_lighting.isChecked()
         }
 
         inputs.update(self.get_show_inputs())
@@ -152,8 +157,8 @@ class ViewportOptionsWidget(plugin.PlayblastPlugin, object):
 
         override_viewport = attrs_dict.get('override_viewport_options', True)
         high_quality = attrs_dict.get('high_quality', True)
-        display_light = attrs_dict.get('display_lights', 0)
-        two_sided_lighting = attrs_dict.get('two_sided_lighting', False)
+        display_light = attrs_dict.get('displayLights', 0)
+        two_sided_lighting = attrs_dict.get('twoSidedLighting', False)
         shadows = attrs_dict.get('shadows', False)
 
         self.high_quality.setChecked(high_quality)
@@ -163,7 +168,7 @@ class ViewportOptionsWidget(plugin.PlayblastPlugin, object):
         self.shadows.setChecked(shadows)
         self.two_sided_lighting.setChecked(two_sided_lighting)
 
-        for action in self.show_Type_actions:
+        for action in self.show_type_actions:
             system_name = self.show_types[action.text()]
             state = attrs_dict.get(system_name, True)
             action.setChecked(state)
@@ -180,7 +185,8 @@ class ViewportOptionsWidget(plugin.PlayblastPlugin, object):
             plugin_shapes = gui.get_plugin_shapes()
             results.update(plugin_shapes)
 
-        results.update(defines.OBJECT_TYPES)
+        object_types = artellapipe.PlayblastsMgr().config.get('object_types', default=dict())
+        results.update(object_types)
 
         return results
 
@@ -208,9 +214,9 @@ class ViewportOptionsWidget(plugin.PlayblastPlugin, object):
 
         index = self.display_light_menu.currentIndex()
         return {
-            'display_lights': self.display_light_menu.itemData(index),
+            'displayLights': self.display_light_menu.itemData(index),
             'shadows': self.shadows.isChecked(),
-            'two_sided_lighting': self.two_sided_lighting.isChecked()
+            'twoSidedLighting': self.two_sided_lighting.isChecked()
         }
 
     def _build_light_menu(self):

@@ -14,7 +14,7 @@ __email__ = "tpovedatd@gmail.com"
 
 from Qt.QtWidgets import *
 
-import tpDccLib as tp
+import tpDcc as tp
 
 from artellapipe.tools.playblastmanager.core import plugin
 
@@ -22,10 +22,10 @@ from artellapipe.tools.playblastmanager.core import plugin
 class CodecWidget(plugin.PlayblastPlugin, object):
 
     id = 'Codec'
-    label = 'Codec'
+    collapsed = True
 
-    def __init__(self, project, parent=None):
-        super(CodecWidget, self).__init__(project=project, parent=parent)
+    def __init__(self, project, config, parent=None):
+        super(CodecWidget, self).__init__(project=project, config=config, parent=parent)
 
     def get_main_layout(self):
         main_layout = QHBoxLayout()
@@ -97,8 +97,12 @@ class CodecWidget(plugin.PlayblastPlugin, object):
         compression = attrs_dict.get('compression', 4)
         quality = attrs_dict.get('quality', 100)
 
-        self.format.setCurrentIndex(self.format.findText(codec_format))
-        self.compression.setCurrentIndex(self.compression.findText(compression))
+        try:
+            self.format.setCurrentIndex(self.format.findText(codec_format))
+            self.compression.setCurrentIndex(self.compression.findText(compression))
+        except Exception:
+            self.format.setCurrentIndex(codec_format)
+            self.compression.setCurrentIndex(compression)
         self.quality.setValue(int(quality))
 
     def refresh(self):
@@ -116,4 +120,4 @@ class CodecWidget(plugin.PlayblastPlugin, object):
 
         playblast_format = self.format.currentText()
         self.compression.clear()
-        self.compression.addItems(tp.Dcc.get_playblast_compressions(format=playblast_format))
+        self.compression.addItems(tp.Dcc.get_playblast_compressions(playblast_format=playblast_format))

@@ -17,7 +17,7 @@ import sys
 
 from Qt.QtWidgets import *
 
-import tpDccLib as tp
+import tpDcc as tp
 
 from artellapipe.tools.playblastmanager.core import plugin
 
@@ -31,14 +31,15 @@ class TimeRanges(object):
 
 class TimeRangeWidget(plugin.PlayblastPlugin, object):
 
-    id = 'Time Range'
+    id = 'TimeRange'
     label = 'Time Range'
+    collapsed = True
 
-    def __init__(self, project, parent=None):
+    def __init__(self, project, config, parent=None):
 
         self._event_callbacks = list()
 
-        super(TimeRangeWidget, self).__init__(project=project, parent=parent)
+        super(TimeRangeWidget, self).__init__(project=project, config=config, parent=parent)
 
     def get_main_layout(self):
         main_layout = QHBoxLayout()

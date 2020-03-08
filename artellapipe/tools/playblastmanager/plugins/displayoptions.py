@@ -15,14 +15,14 @@ __email__ = "tpovedatd@gmail.com"
 from Qt.QtCore import *
 from Qt.QtWidgets import *
 
-import tpDccLib as tp
+import tpDcc as tp
 
-from tpQtLib.widgets import color
+from tpDcc.libs.qt.widgets import color
 
 from artellapipe.tools.playblastmanager.core import plugin
 
 if tp.is_maya():
-    import tpMayaLib as maya
+    import tpDcc.dccs.maya as maya
 
 
 class DisplayOptionsWidget(plugin.PlayblastPlugin, object):
@@ -30,7 +30,9 @@ class DisplayOptionsWidget(plugin.PlayblastPlugin, object):
     Allows user to set playblast display settings
     """
 
-    id = 'Display Options'
+    id = 'DisplayOptions'
+    label = 'Display Options'
+    collapsed = True
 
     BACKGROUND_DEFAULT = [0.6309999823570251, 0.6309999823570251, 0.6309999823570251]
     TOP_DEFAULT = [0.5350000262260437, 0.6169999837875366, 0.7020000219345093]
@@ -42,11 +44,11 @@ class DisplayOptionsWidget(plugin.PlayblastPlugin, object):
               "backgroundTop": "Top",
               "backgroundBottom": "Bottom"}
 
-    def __init__(self, project, parent=None):
+    def __init__(self, project, config, parent=None):
 
         self._colors = dict()
 
-        super(DisplayOptionsWidget, self).__init__(project=project, parent=parent)
+        super(DisplayOptionsWidget, self).__init__(project=project, config=config, parent=parent)
 
     def get_main_layout(self):
         main_layout = QVBoxLayout()
@@ -155,7 +157,7 @@ class DisplayOptionsWidget(plugin.PlayblastPlugin, object):
         color_layout.addWidget(color_picker)
         color_layout.setAlignment(lbl, Qt.AlignCenter)
         layout.addLayout(color_layout)
-        color_picker.valueChanged.connect(self.optionsChanged)
+        color_picker.colorChanged.connect(self.optionsChanged)
         self._colors[label] = color_picker
 
         return color_picker

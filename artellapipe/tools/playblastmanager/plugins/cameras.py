@@ -17,15 +17,14 @@ import logging.config
 
 from Qt.QtWidgets import *
 
-from tpPyUtils import python
+from tpDcc.libs.python import python
 
-import tpDccLib as tp
+import tpDcc as tp
 
-from artellapipe.utils import resource
 from artellapipe.tools.playblastmanager.core import plugin
 
 if tp.is_maya():
-    import tpMayaLib as maya
+    import tpDcc.dccs.maya as maya
 
 LOGGER = logging.getLogger()
 
@@ -36,9 +35,10 @@ class CamerasWidget(plugin.PlayblastPlugin, object):
     """
 
     id = 'Camera'
+    collapsed = True
 
-    def __init__(self, project, parent=None):
-        super(CamerasWidget, self).__init__(project=project, parent=parent)
+    def __init__(self, project, config, parent=None):
+        super(CamerasWidget, self).__init__(project=project, config=config, parent=parent)
 
         self._on_set_active_camera()
         self._on_update_label()
@@ -58,7 +58,7 @@ class CamerasWidget(plugin.PlayblastPlugin, object):
 
         self.get_active = QPushButton('Get Active')
         self.get_active.setToolTip('Set camera from currently active view')
-        refresh_icon = resource.ResourceManager().icon('refresh')
+        refresh_icon = tp.ResourcesMgr().icon('refresh')
         self.refresh = QPushButton()
         self.refresh.setMaximumWidth(25)
         self.refresh.setIcon(refresh_icon)
@@ -72,7 +72,6 @@ class CamerasWidget(plugin.PlayblastPlugin, object):
         self.get_active.clicked.connect(self._on_set_active_camera)
         self.refresh.clicked.connect(self._on_refresh)
         self.cameras.currentIndexChanged.connect(self._on_update_label)
-        self.cameras.currentIndexChanged.connect(self.validate)
 
     def validate(self):
         """
@@ -173,6 +172,8 @@ class CamerasWidget(plugin.PlayblastPlugin, object):
         self.label = 'Camera ({})'.format(camera)
         self.labelChanged.emit(self.label)
 
+        self.validate()
+
     def _on_refresh(self, camera=None):
         """
         Internal callback function that refreshes of current cameras in the scene and emit proper signal if necessary
@@ -183,14 +184,16 @@ class CamerasWidget(plugin.PlayblastPlugin, object):
         if camera is None:
             index = self.cameras.currentIndex()
             if index != -1:
-                camera = self.cameras.currentText()
+                camera = self.cameras.currentData()
 
         self.cameras.blockSignals(True)
         try:
             self.cameras.clear()
             camera_shapes = tp.Dcc.list_nodes(node_type='camera')
             camera_transforms = tp.Dcc.shape_transform(camera_shapes)
-            self.cameras.addItems(camera_transforms)
+            camera_shorts = [tp.Dcc.node_short_name(camera_xform) for camera_xform in camera_transforms]
+            for full_path, short_name in zip(camera_transforms, camera_shorts):
+                self.cameras.addItem(short_name, userData=full_path)
             self.select_camera(camera)
             self.cameras.blockSignals(False)
         except Exception as e:

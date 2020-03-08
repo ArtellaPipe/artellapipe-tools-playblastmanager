@@ -14,7 +14,7 @@ __email__ = "tpovedatd@gmail.com"
 
 from Qt.QtWidgets import *
 
-import tpDccLib as tp
+import tpDcc as tp
 
 from artellapipe.tools.playblastmanager.core import plugin
 
@@ -25,12 +25,13 @@ class RendererWidget(plugin.PlayblastPlugin, object):
     """
 
     id = 'Renderer'
+    collapsed = True
 
-    def __init__(self, project, parent=None):
+    def __init__(self, project, config, parent=None):
 
         self._renderers = self.get_renderers()
 
-        super(RendererWidget, self).__init__(project=project, parent=parent)
+        super(RendererWidget, self).__init__(project=project, config=config, parent=parent)
 
     def get_main_layout(self):
         main_layout = QVBoxLayout()

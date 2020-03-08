@@ -20,9 +20,10 @@ from artellapipe.tools.playblastmanager.core import plugin
 class StampWidget(plugin.PlayblastPlugin, object):
 
     id = 'Stamp'
+    collapsed = True
 
-    def __init__(self, project, parent=None):
-        super(StampWidget, self).__init__(project=project, parent=parent)
+    def __init__(self, project, config, parent=None):
+        super(StampWidget, self).__init__(project=project, config=config, parent=parent)
 
     def get_main_layout(self):
         main_layout = QVBoxLayout()
@@ -34,7 +35,6 @@ class StampWidget(plugin.PlayblastPlugin, object):
         super(StampWidget, self).ui()
 
         self.enable_cbx = QCheckBox('Enable')
-
         self.main_layout.addWidget(self.enable_cbx)
 
     def get_inputs(self, as_preset=False):

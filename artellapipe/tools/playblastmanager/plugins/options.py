@@ -14,22 +14,22 @@ __email__ = "tpovedatd@gmail.com"
 
 from Qt.QtWidgets import *
 
-import tpDccLib as tp
+import tpDcc as tp
 
 from artellapipe.tools.playblastmanager.core import plugin
 
 if tp.is_maya():
-    import tpMayaLib as maya
-    from tpMayaLib.core import gui
+    import tpDcc.dccs.maya as maya
+    from tpDcc.dccs.maya.core import gui
 
 
 class PlayblastOptionsWidget(plugin.PlayblastPlugin, object):
 
     id = 'Options'
-    label = 'Options'
+    collapsed = True
 
-    def __init__(self, project, parent=None):
-        super(PlayblastOptionsWidget, self).__init__(project=project, parent=parent)
+    def __init__(self, project, config, parent=None):
+        super(PlayblastOptionsWidget, self).__init__(project=project, config=config, parent=parent)
 
     def get_main_layout(self):
         main_layout = QVBoxLayout()

@@ -18,7 +18,7 @@ from functools import partial
 from Qt.QtCore import *
 from Qt.QtWidgets import *
 
-import tpDccLib as tp
+import tpDcc as tp
 
 from artellapipe.tools.playblastmanager.core import plugin
 
@@ -32,11 +32,12 @@ class ScaleSettings(object):
 class ResolutionWidget(plugin.PlayblastPlugin, object):
 
     id = 'Resolution'
+    collapsed = True
 
     resolutionChanged = Signal()
 
-    def __init__(self, project, parent=None):
-        super(ResolutionWidget, self).__init__(project=project, parent=parent)
+    def __init__(self, project, config, parent=None):
+        super(ResolutionWidget, self).__init__(project=project, config=config, parent=parent)
 
     def get_main_layout(self):
         main_layout = QVBoxLayout()

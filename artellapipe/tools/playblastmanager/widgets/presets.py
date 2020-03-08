@@ -20,12 +20,11 @@ import logging.config
 from Qt.QtCore import *
 from Qt.QtWidgets import *
 
-from tpPyUtils import jsonio, fileio, folder as folder_utils
-
-from tpQtLib.core import base
+import tpDcc
+from tpDcc.libs.python import jsonio, fileio, folder as folder_utils
+from tpDcc.libs.qt.core import base
 
 import artellapipe
-from artellapipe.utils import resource
 
 LOGGER = logging.getLogger()
 
@@ -33,7 +32,6 @@ LOGGER = logging.getLogger()
 class PlayblastPreset(base.BaseWidget, object):
 
     presetLoaded = Signal(dict)
-    configOpened = Signal()
 
     id = 'Presets'
     label = 'Presets'
@@ -52,10 +50,6 @@ class PlayblastPreset(base.BaseWidget, object):
             LOGGER.warning('No Presets folders found!')
             return
 
-        # if not os.path.exists(presets_folder):
-        #     project.logger.debug('Presets Path not found! Trying to sync through Artella!')
-        #     syncdialog.SyncPath(paths=[os.path.dirname(os.path.dirname(presets_folder))]).sync()
-
         for preset_folder in presets_folders:
             self.register_preset_path(preset_folder)
 
@@ -73,34 +67,33 @@ class PlayblastPreset(base.BaseWidget, object):
 
         self._presets = QComboBox()
         self._presets.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        self._presets.addItem('*')
 
-        save_icon = resource.ResourceManager().icon('save')
+        save_icon = tpDcc.ResourcesMgr().icon('save')
         self._save_btn = QPushButton()
         self._save_btn.setIcon(save_icon)
         self._save_btn.setFixedWidth(30)
         self._save_btn.setToolTip('Save Preset')
         self._save_btn.setStatusTip('Save Preset')
 
-        load_icon = resource.ResourceManager().icon('open')
+        load_icon = tpDcc.ResourcesMgr().icon('open')
         self._load_btn = QPushButton()
         self._load_btn.setIcon(load_icon)
         self._load_btn.setFixedWidth(30)
         self._load_btn.setToolTip('Load Preset')
         self._load_btn.setStatusTip('Load Preset')
 
-        preset_config_icon = resource.ResourceManager().icon('settings')
-        self._preset_config = QPushButton()
-        self._preset_config.setIcon(preset_config_icon)
-        self._preset_config.setFixedWidth(30)
-        self._preset_config.setToolTip('Preset Configuration')
-        self._preset_config.setStatusTip('Preset Configuration')
+        preset_sync_icon = tpDcc.ResourcesMgr().icon('sync')
+        self._preset_sync = QPushButton()
+        self._preset_sync.setIcon(preset_sync_icon)
+        self._preset_sync.setFixedWidth(30)
+        self._preset_sync.setToolTip('Sync Prests from Artella')
+        self._preset_sync.setStatusTip('Sync Presets from ASrtella')
 
         vertical_separator = QFrame()
         vertical_separator.setFrameShape(QFrame.VLine)
         vertical_separator.setFrameShadow(QFrame.Sunken)
 
-        open_templates_folder_icon = resource.ResourceManager().icon('search')
+        open_templates_folder_icon = tpDcc.ResourcesMgr().icon('search')
         self._open_templates_folder_btn = QPushButton()
         self._open_templates_folder_btn.setIcon(open_templates_folder_icon)
         self._open_templates_folder_btn.setFixedWidth(30)
@@ -111,7 +104,7 @@ class PlayblastPreset(base.BaseWidget, object):
             self._presets,
             self._save_btn,
             self._load_btn,
-            self._preset_config,
+            self._preset_sync,
             vertical_separator,
             self._open_templates_folder_btn
         ]:
@@ -120,7 +113,7 @@ class PlayblastPreset(base.BaseWidget, object):
     def setup_signals(self):
         self._save_btn.clicked.connect(self._on_save_preset)
         self._load_btn.clicked.connect(self.import_preset)
-        self._preset_config.clicked.connect(self.configOpened)
+        self._preset_sync.clicked.connect(self._on_sync_presets)
         self._presets.currentIndexChanged.connect(self.load_active_preset)
         self._open_templates_folder_btn.clicked.connect(self.open_templates_folder)
 
@@ -138,6 +131,8 @@ class PlayblastPreset(base.BaseWidget, object):
 
     def apply_inputs(self, settings):
         path = settings.get('selected', None)
+        if not path:
+            return
         index = self._presets.findData(path)
         if index == -1:
             if os.path.exists(path):
@@ -147,7 +142,11 @@ class PlayblastPreset(base.BaseWidget, object):
                 LOGGER.warning('Previously selected preset is not available: {}'.format(path))
                 index = 0
 
-        self._presets.setCurrentIndex(index)
+        self._presets.blockSignals(True)
+        try:
+            self._presets.setCurrentIndex(index)
+        finally:
+            self._presets.blockSignals(False)
 
     @classmethod
     def get_preset_paths(cls):
@@ -315,6 +314,10 @@ class PlayblastPreset(base.BaseWidget, object):
         for preset_file in self.discover_presets():
             self.add_preset(preset_file)
 
+        if self._presets.count() <= 0:
+            self.presets.addItem('*')
+        self._presets.setCurrentIndex(0)
+
     def _default_browse_path(self):
         """
         Returns the current browse path for save/load preset
@@ -334,8 +337,22 @@ class PlayblastPreset(base.BaseWidget, object):
 
     def _on_save_preset(self):
         """
-        Save playblast template to a file
+        Internal function that saves playblast template to a file
         """
 
         inputs = self._inputs_getter(as_preset=True)
         self.save_preset(inputs)
+
+    def _on_sync_presets(self):
+        """
+        Internal function that syncronizes presets from Artella
+        """
+
+        presets_paths = self.get_preset_paths()
+        if presets_paths:
+            artellapipe.FilesMgr().sync_paths(presets_paths, recursive=True)
+            self._presets.blockSignals(True)
+            self._presets.clear()
+            self._presets.blockSignals(True)
+            self._process_presets()
+            self.load_active_preset()

@@ -15,9 +15,9 @@ __email__ = "tpovedatd@gmail.com"
 from Qt.QtCore import *
 from Qt.QtWidgets import *
 
-from tpPyUtils import python
+from tpDcc.libs.python import python
 
-from tpQtLib.core import base
+from tpDcc.libs.qt.core import base
 
 
 class PlayblastPlugin(base.BaseWidget, object):
@@ -25,12 +25,14 @@ class PlayblastPlugin(base.BaseWidget, object):
     id = 'DefaultPlayblastPlugin'
 
     label = ''
+    collapsed = False
     labelChanged = Signal(str)
     optionsChanged = Signal()
 
-    def __init__(self, project, parent=None):
+    def __init__(self, project, config, parent=None):
 
         self._project = project
+        self._config = config
 
         super(PlayblastPlugin, self).__init__(parent=parent)
 
@@ -40,7 +42,15 @@ class PlayblastPlugin(base.BaseWidget, object):
     def __repr__(self):
         return u"%s.%s(%r)" % (__name__, type(self).__name__, self.__str__())
 
+    @staticmethod
+    def can_be_registered():
+        return True
+
     id = python.classproperty(lambda cls: cls.__name__)
+
+    @property
+    def config(self):
+        return self._config
 
     def get_main_layout(self):
         main_layout = QVBoxLayout()
