@@ -6,6 +6,7 @@ Submodules
 
 .. toctree::
 
+   artellapipe.tools.playblastmanager.widgets.playblastmanager
    artellapipe.tools.playblastmanager.widgets.presets
    artellapipe.tools.playblastmanager.widgets.preview
 

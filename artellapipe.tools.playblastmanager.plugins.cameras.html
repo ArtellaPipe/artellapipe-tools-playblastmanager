@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -172,70 +172,8 @@
 
            <div itemprop="articleBody">
             
-  <div class="section" id="module-artellapipe.tools.playblastmanager.plugins.cameras">
-<span id="artellapipe-tools-playblastmanager-plugins-cameras-module"></span><h1>artellapipe.tools.playblastmanager.plugins.cameras module<a class="headerlink" href="#module-artellapipe.tools.playblastmanager.plugins.cameras" title="Permalink to this headline">¶</a></h1>
-<p>Module that contains implementation for Playblast Time Range Plugin</p>
-<dl class="class">
-<dt id="artellapipe.tools.playblastmanager.plugins.cameras.CamerasWidget">
-<em class="property">class </em><code class="sig-prename descclassname">artellapipe.tools.playblastmanager.plugins.cameras.</code><code class="sig-name descname">CamerasWidget</code><span class="sig-paren">(</span><em class="sig-param">project</em>, <em class="sig-param">parent=None</em><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.plugins.cameras.CamerasWidget" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="artellapipe.tools.playblastmanager.core.plugin.html#artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin" title="artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Allows user to select the camera to generate playblast from</p>
-<dl class="method">
-<dt id="artellapipe.tools.playblastmanager.plugins.cameras.CamerasWidget.get_main_layout">
-<code class="sig-name descname">get_main_layout</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.plugins.cameras.CamerasWidget.get_main_layout" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function that generates the main layout used by the widget
-Override if necessary on new widgets
-:return: QLayout</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="artellapipe.tools.playblastmanager.plugins.cameras.CamerasWidget.get_outputs">
-<code class="sig-name descname">get_outputs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.plugins.cameras.CamerasWidget.get_outputs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Overrides base ArtellaPlayblastPlugin get_outputs function
-Returns the outputs variables of the Playblast widget as dict
-:return: dict</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="artellapipe.tools.playblastmanager.plugins.cameras.CamerasWidget.id">
-<code class="sig-name descname">id</code><em class="property"> = 'Camera'</em><a class="headerlink" href="#artellapipe.tools.playblastmanager.plugins.cameras.CamerasWidget.id" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="artellapipe.tools.playblastmanager.plugins.cameras.CamerasWidget.select_camera">
-<code class="sig-name descname">select_camera</code><span class="sig-paren">(</span><em class="sig-param">camera</em><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.plugins.cameras.CamerasWidget.select_camera" title="Permalink to this definition">¶</a></dt>
-<dd><p>Selects the given camera node
-:param camera: str</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="artellapipe.tools.playblastmanager.plugins.cameras.CamerasWidget.setup_signals">
-<code class="sig-name descname">setup_signals</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.plugins.cameras.CamerasWidget.setup_signals" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function that set up signals of the widget</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="artellapipe.tools.playblastmanager.plugins.cameras.CamerasWidget.staticMetaObject">
-<code class="sig-name descname">staticMetaObject</code><em class="property"> = &lt;PySide2.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#artellapipe.tools.playblastmanager.plugins.cameras.CamerasWidget.staticMetaObject" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="artellapipe.tools.playblastmanager.plugins.cameras.CamerasWidget.ui">
-<code class="sig-name descname">ui</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.plugins.cameras.CamerasWidget.ui" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function that sets up the ui of the widget
-Override it on new widgets (but always call super)</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="artellapipe.tools.playblastmanager.plugins.cameras.CamerasWidget.validate">
-<code class="sig-name descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.plugins.cameras.CamerasWidget.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Overrides base ArtellaPlayblastPlugin validate function
-Will ensure that widget outputs are valid and will raise proper errors if necessary
-:return: list&lt;str&gt;</p>
-</dd></dl>
-
-</dd></dl>
-
+  <div class="section" id="artellapipe-tools-playblastmanager-plugins-cameras-module">
+<h1>artellapipe.tools.playblastmanager.plugins.cameras module<a class="headerlink" href="#artellapipe-tools-playblastmanager-plugins-cameras-module" title="Permalink to this headline">¶</a></h1>
 </div>
 
 

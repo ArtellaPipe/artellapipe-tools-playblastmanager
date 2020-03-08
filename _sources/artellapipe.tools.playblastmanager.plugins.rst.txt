@@ -16,6 +16,7 @@ Submodules
    artellapipe.tools.playblastmanager.plugins.save
    artellapipe.tools.playblastmanager.plugins.stamp
    artellapipe.tools.playblastmanager.plugins.timerange
+   artellapipe.tools.playblastmanager.plugins.tracking
    artellapipe.tools.playblastmanager.plugins.viewport
 
 Module contents

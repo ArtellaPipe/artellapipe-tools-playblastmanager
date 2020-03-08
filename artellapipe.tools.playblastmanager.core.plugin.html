@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -172,95 +172,8 @@
 
            <div itemprop="articleBody">
             
-  <div class="section" id="module-artellapipe.tools.playblastmanager.core.plugin">
-<span id="artellapipe-tools-playblastmanager-core-plugin-module"></span><h1>artellapipe.tools.playblastmanager.core.plugin module<a class="headerlink" href="#module-artellapipe.tools.playblastmanager.core.plugin" title="Permalink to this headline">¶</a></h1>
-<p>Module that contains base implementation for Playblast Plugins</p>
-<dl class="class">
-<dt id="artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin">
-<em class="property">class </em><code class="sig-prename descclassname">artellapipe.tools.playblastmanager.core.plugin.</code><code class="sig-name descname">PlayblastPlugin</code><span class="sig-paren">(</span><em class="sig-param">project</em>, <em class="sig-param">parent=None</em><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tpQtLib.core.base.BaseWidget</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="method">
-<dt id="artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin.apply_inputs">
-<code class="sig-name descname">apply_inputs</code><span class="sig-paren">(</span><em class="sig-param">attrs_dict</em><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin.apply_inputs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Applies the given dict of attributes to the widget
-:param attrs_dict: dict</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin.get_inputs">
-<code class="sig-name descname">get_inputs</code><span class="sig-paren">(</span><em class="sig-param">as_preset=False</em><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin.get_inputs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a dict with proper input variables as keys of the dictionary
-:return: dict</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin.get_main_layout">
-<code class="sig-name descname">get_main_layout</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin.get_main_layout" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function that generates the main layout used by the widget
-Override if necessary on new widgets
-:return: QLayout</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin.get_outputs">
-<code class="sig-name descname">get_outputs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin.get_outputs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the outputs variables of the Playblast widget as dict
-:return: dict</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin.id">
-<code class="sig-name descname">id</code><em class="property"> = 'PlayblastPlugin'</em><a class="headerlink" href="#artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin.id" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin.initialize">
-<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin.initialize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method used to initialize callbacks on widget</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin.label">
-<code class="sig-name descname">label</code><em class="property"> = ''</em><a class="headerlink" href="#artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin.label" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin.labelChanged">
-<code class="sig-name descname">labelChanged</code><em class="property"> = &lt;PySide2.QtCore.Signal object&gt;</em><a class="headerlink" href="#artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin.labelChanged" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin.on_playblast_finished">
-<code class="sig-name descname">on_playblast_finished</code><span class="sig-paren">(</span><em class="sig-param">options</em><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin.on_playblast_finished" title="Permalink to this definition">¶</a></dt>
-<dd><p>Internal callback function that is called when a Playblast is generated
-:param options: dict</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin.optionsChanged">
-<code class="sig-name descname">optionsChanged</code><em class="property"> = &lt;PySide2.QtCore.Signal object&gt;</em><a class="headerlink" href="#artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin.optionsChanged" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin.staticMetaObject">
-<code class="sig-name descname">staticMetaObject</code><em class="property"> = &lt;PySide2.QtCore.QMetaObject object&gt;</em><a class="headerlink" href="#artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin.staticMetaObject" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin.uninitialize">
-<code class="sig-name descname">uninitialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin.uninitialize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Un-register any callback created when deleting the widget</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin.validate">
-<code class="sig-name descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#artellapipe.tools.playblastmanager.core.plugin.PlayblastPlugin.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Will ensure that widget outputs are valid and will raise proper errors if necessary
-:return: list&lt;str&gt;</p>
-</dd></dl>
-
-</dd></dl>
-
+  <div class="section" id="artellapipe-tools-playblastmanager-core-plugin-module">
+<h1>artellapipe.tools.playblastmanager.core.plugin module<a class="headerlink" href="#artellapipe-tools-playblastmanager-core-plugin-module" title="Permalink to this headline">¶</a></h1>
 </div>
 
 
