@@ -1,2 +1,2 @@
 include artellapipe/tools/playblastmanager/__logging__.ini
-include artellapipe/tools/playblastmanager/resources/images/*.*
+recursive-include artellapipe/tools/playblastmanager/resources/ *.*
