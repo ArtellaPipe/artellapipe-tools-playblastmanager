@@ -22,8 +22,8 @@ from Qt.QtCore import *
 from Qt.QtWidgets import *
 
 import tpDcc
-from tpDcc.libs.python import path as path_utils, python
-from tpDcc.libs.qt.widgets import accordion, stack, splitters
+from tpDcc.libs.python import path as path_utils, python, folder
+from tpDcc.libs.qt.widgets import layouts, label, accordion, stack, dividers, buttons
 
 if python.is_python2():
     import pkgutil as loader
@@ -65,7 +65,6 @@ class PlayblastManager(artellapipe.ToolWidget, object):
     optionsChanged = Signal(dict)
     playblastStart = Signal(dict)
     playblastFinished = Signal(dict)
-    viewerStart = Signal(dict)
 
     def __init__(self, project, config, settings, parent):
         self.playblast_widgets = list()
@@ -106,6 +105,7 @@ class PlayblastManager(artellapipe.ToolWidget, object):
                 plugin_label = plugin_inst.id
             new_item = self._plugins_widget.add_item(plugin_label, plugin_inst, collapsed=plugin_inst.collapsed)
             plugin_inst.labelChanged.connect(new_item.setTitle)
+            self.playblastFinished.connect(plugin_inst.on_playblast_finished)
 
             self._plugins.append(plugin_inst)
 
@@ -125,20 +125,20 @@ class PlayblastManager(artellapipe.ToolWidget, object):
         no_items_widget.setFrameShape(QFrame.StyledPanel)
         no_items_widget.setFrameShadow(QFrame.Sunken)
         no_items_widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
-        no_items_layout = QVBoxLayout()
+        no_items_layout = layouts.VerticalLayout()
         no_items_layout.setContentsMargins(0, 0, 0, 0)
         no_items_layout.setSpacing(0)
         no_items_widget.setLayout(no_items_layout)
-        no_items_lbl = QLabel()
+        no_items_lbl = label.BaseLabel()
         no_items_pixmap = tpDcc.ResourcesMgr().pixmap('no_plugins_available')
         no_items_lbl.setPixmap(no_items_pixmap)
         no_items_lbl.setAlignment(Qt.AlignCenter)
-        no_items_layout.addItem(QSpacerItem(0, 10, QSizePolicy.Preferred, QSizePolicy.Expanding))
+        no_items_layout.addStretch()
         no_items_layout.addWidget(no_items_lbl)
-        no_items_layout.addItem(QSpacerItem(0, 10, QSizePolicy.Preferred, QSizePolicy.Expanding))
+        no_items_layout.addStretch()
 
         accordions_widget = QWidget()
-        accordions_layout = QVBoxLayout()
+        accordions_layout = layouts.VerticalLayout()
         accordions_layout.setContentsMargins(0, 0, 0, 0)
         accordions_layout.setSpacing(0)
         accordions_widget.setLayout(accordions_layout)
@@ -158,12 +158,12 @@ class PlayblastManager(artellapipe.ToolWidget, object):
         self.preview_widget = preview.PlayblastPreview(options=self.get_outputs, validator=self.validate, parent=self)
         self._main_widget.add_item('Preview', self.preview_widget, collapsed=False)
 
-        self.capture_btn = QPushButton('C A P T U R E')
+        self.capture_btn = buttons.BaseButton('C A P T U R E')
         self.capture_btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         self.capture_btn.setVisible(False)
 
         accordions_layout.addWidget(self._main_widget)
-        accordions_layout.addLayout(splitters.SplitterLayout())
+        accordions_layout.addLayout(dividers.DividerLayout())
         accordions_layout.addWidget(self._plugins_widget)
 
         self._stack.addWidget(no_items_widget)
@@ -414,9 +414,21 @@ class PlayblastManager(artellapipe.ToolWidget, object):
 
         options = self.get_outputs()
         filename = options.get('filename', None)
-        dir_name = os.path.dirname(filename)
-        base_filename = os.path.basename(filename).replace('.', '_')
-        filename = path_utils.clean_path(os.path.join(dir_name, base_filename))
+        if not filename:
+            project_path = self._project.get_path()
+            if not project_path:
+                LOGGER.warning('Impossible to capture playblast because project is not defined!')
+                return
+
+            out_playblasts_dir = path_utils.join_path(project_path, 'out_playblasts')
+            if not os.path.isdir(out_playblasts_dir):
+                os.makedirs(out_playblasts_dir)
+            total_playblasts = folder.get_files(out_playblasts_dir) or list()
+            filename = path_utils.join_path(out_playblasts_dir, 'playblast_{}'.format(len(total_playblasts)))
+        if filename:
+            dir_name = os.path.dirname(filename)
+            base_filename = os.path.basename(filename).replace('.', '_')
+            filename = path_utils.clean_path(os.path.join(dir_name, base_filename))
 
         self.playblastStart.emit(options)
 
@@ -425,21 +437,32 @@ class PlayblastManager(artellapipe.ToolWidget, object):
         options['filename'] = temp_filename
         options['filename'] = artellapipe.PlayblastsMgr().capture_scene(**options)
         playblast_path = options['filename']
-        if playblast_path and os.path.isfile(options['filename']):
-            out_ext = os.path.splitext(options['filename'])[-1]
+        if playblast_path and os.path.isfile(playblast_path):
+            out_ext = os.path.splitext(playblast_path)[-1]
             filename = '{}{}'.format(os.path.splitext(filename)[0], out_ext)
             do_stamp = options.get('enable_stamp', False)
             if do_stamp:
-                filename = artellapipe.PlayblastsMgr().stamp_playblast(
-                    options['filename'], filename, extra_dict=options)
+                filename = artellapipe.PlayblastsMgr().stamp_playblast(playblast_path, filename, extra_dict=options)
             else:
-                shutil.move(options['filename'], filename)
+                out_dir = os.path.dirname(playblast_path)
+                all_files = folder.get_files(out_dir, full_path=True) or list()
+                options['filename'] = list()
+                for out_file in all_files:
+                    file_dir, file_name, file_ext = path_utils.split_path(out_file)
+                    target_file = path_utils.join_path(os.path.dirname(filename), '{}{}'.format(file_name, file_ext))
+                    shutil.move(out_file, target_file)
+                    options['filename'].append(target_file)
+
+                # For now we set to None, to avoid to upload to production tracker non video files
+                filename = None
         try:
             shutil.rmtree(temp_dir)
         except Exception:
             pass
 
-        tracker_enable = options['tracker_enable']
+        options['filename'] = filename
+
+        tracker_enable = options.get('tracker_enable', False)
         file_to_upload = filename
         if tracker_enable:
             if file_to_upload and os.path.isfile(file_to_upload):
@@ -448,6 +471,7 @@ class PlayblastManager(artellapipe.ToolWidget, object):
                 shot_name = options.get('shot_name', None)
                 task_name = options.get('task_name', None)
                 comment = options.get('task_comment', '')
+                status = options.get('task_status', '')
                 if sequence_name and shot_name and task_name:
                     shot_found = artellapipe.ShotsMgr().find_shot(shot_name)
                     if not shot_found:
@@ -458,7 +482,7 @@ class PlayblastManager(artellapipe.ToolWidget, object):
                             for shot_task in shots_tasks:
                                 if shot_task.name == task_name:
                                     file_uploaded = artellapipe.Tracker().upload_shot_task_preview(
-                                        shot_task.id, comment=comment, preview_file_path=file_to_upload)
+                                        shot_task.id, comment=comment, preview_file_path=file_to_upload, status=status)
                                     break
                 if not file_uploaded:
                     LOGGER.warning('It was not possible to upload "{}" to "{}". Please upload it manually!'.format(
@@ -471,18 +495,6 @@ class PlayblastManager(artellapipe.ToolWidget, object):
             return True
 
         self.playblastFinished.emit(options)
-
-        # filename = options['filename']
-        #
-        # viewer = options.get('viewer', False)
-        # if viewer:
-        #     if filename and os.path.exists(filename):
-        #         self.viewerStart.emit(options)
-        #         osplatform.open_file(file_path=filename)
-        #     else:
-        #         raise RuntimeError('Cannot open playblast because file "{}" does not exists!'.format(filename))
-        #
-        # return filename
 
 
 class PlayblastTemplateConfigurationDialog(dialog.ArtellaDialog, object):
@@ -512,13 +524,6 @@ class PlayblastTemplateConfigurationDialog(dialog.ArtellaDialog, object):
         self.options_widget.rollout_style = accordion.AccordionStyle.MAYA
         self.main_layout.addWidget(self.options_widget)
 
-        # self.codec = codec.CodecWidget(project=self._project)
-        # self.renderer = renderer.RendererWidget(project=self._project)
-        # self.display = displayoptions.DisplayOptionsWidget(project=self._project)
-        # self.viewport = viewport.ViewportOptionsWidget(project=self._project)
-        # self.options = options.PlayblastOptionsWidget(project=self._project)
-        # self.panzoom = panzoom.PanZoomWidget(project=self._project)
-
         for playblast_plugin in [self.codec, self.renderer, self.display, self.viewport, self.options, self.panzoom]:
             playblast_plugin.initialize()
             # widget.optionsChanged.connect(self._on_update_settings)
@@ -530,3 +535,4 @@ class PlayblastTemplateConfigurationDialog(dialog.ArtellaDialog, object):
             self.playblast_config_widgets.append(playblast_plugin)
             if item is not None:
                 playblast_plugin.labelChanged.connect(item.setTitle)
+
