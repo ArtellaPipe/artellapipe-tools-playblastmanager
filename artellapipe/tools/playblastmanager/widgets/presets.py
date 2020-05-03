@@ -23,6 +23,7 @@ from Qt.QtWidgets import *
 import tpDcc
 from tpDcc.libs.python import jsonio, fileio, folder as folder_utils
 from tpDcc.libs.qt.core import base
+from tpDcc.libs.qt.widgets import layouts, buttons, combobox
 
 import artellapipe
 
@@ -56,7 +57,7 @@ class PlayblastPreset(base.BaseWidget, object):
         self._process_presets()
 
     def get_main_layout(self):
-        main_layout = QHBoxLayout()
+        main_layout = layouts.HorizontalLayout()
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setAlignment(Qt.AlignCenter)
 
@@ -65,37 +66,29 @@ class PlayblastPreset(base.BaseWidget, object):
     def ui(self):
         super(PlayblastPreset, self).ui()
 
-        self._presets = QComboBox()
+        self._presets = combobox.BaseComboBox()
         self._presets.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
-        save_icon = tpDcc.ResourcesMgr().icon('save')
-        self._save_btn = QPushButton()
-        self._save_btn.setIcon(save_icon)
+        self._save_btn = buttons.BaseToolButton().image('save').icon_only()
         self._save_btn.setFixedWidth(30)
         self._save_btn.setToolTip('Save Preset')
         self._save_btn.setStatusTip('Save Preset')
 
-        load_icon = tpDcc.ResourcesMgr().icon('open')
-        self._load_btn = QPushButton()
-        self._load_btn.setIcon(load_icon)
+        self._load_btn = buttons.BaseToolButton().image('open').icon_only()
         self._load_btn.setFixedWidth(30)
         self._load_btn.setToolTip('Load Preset')
         self._load_btn.setStatusTip('Load Preset')
 
-        preset_sync_icon = tpDcc.ResourcesMgr().icon('sync')
-        self._preset_sync = QPushButton()
-        self._preset_sync.setIcon(preset_sync_icon)
+        self._preset_sync = buttons.BaseToolButton().image('sync').icon_only()
         self._preset_sync.setFixedWidth(30)
-        self._preset_sync.setToolTip('Sync Prests from Artella')
-        self._preset_sync.setStatusTip('Sync Presets from ASrtella')
+        self._preset_sync.setToolTip('Sync Presets from Artella')
+        self._preset_sync.setStatusTip('Sync Presets from Artella')
 
         vertical_separator = QFrame()
         vertical_separator.setFrameShape(QFrame.VLine)
         vertical_separator.setFrameShadow(QFrame.Sunken)
 
-        open_templates_folder_icon = tpDcc.ResourcesMgr().icon('search')
-        self._open_templates_folder_btn = QPushButton()
-        self._open_templates_folder_btn.setIcon(open_templates_folder_icon)
+        self._open_templates_folder_btn = buttons.BaseToolButton().image('search').icon_only()
         self._open_templates_folder_btn.setFixedWidth(30)
         self._open_templates_folder_btn.setToolTip('Open Templates Folder')
         self._open_templates_folder_btn.setStatusTip('Open Templates Folder')
@@ -149,7 +142,7 @@ class PlayblastPreset(base.BaseWidget, object):
             self._presets.blockSignals(False)
 
     @classmethod
-    def get_preset_paths(cls):
+    def get_preset_paths(cls, get_all=False):
         """
         Returns existing registered preset paths
         :return: list<str>, list of full paths
@@ -159,11 +152,11 @@ class PlayblastPreset(base.BaseWidget, object):
         for path in cls.registered_paths:
             if path in paths:
                 continue
-            if not os.path.exists(path):
+            if not os.path.exists(path) and not get_all:
                 continue
             paths.append(path)
 
-        return paths
+        return list(set(paths))
 
     @classmethod
     def register_preset_path(cls, path):
@@ -234,6 +227,12 @@ class PlayblastPreset(base.BaseWidget, object):
             LOGGER.info('Preset is already in the presets list: "{}"'.format(filename))
             item_index = paths.index(filename)
         else:
+            try:
+                jsonio.read_file(filename)
+            except Exception as exc:
+                LOGGER.warning('Error while reading Plabylast preset: {} | {} | {}'.format(label, filename, exc))
+                return
+
             self._presets.addItem(label, userData=filename)
             item_index = item_count
 
@@ -290,6 +289,7 @@ class PlayblastPreset(base.BaseWidget, object):
             return {}
 
         preset = jsonio.read_file(filename)
+
         self.presetLoaded.emit(preset)
 
         self._presets.blockSignals(True)
@@ -329,7 +329,7 @@ class PlayblastPreset(base.BaseWidget, object):
         current_index = self._presets.currentIndex()
         path = self._presets.itemData(current_index)
         if not path:
-            paths = self.get_preset_paths()
+            paths = self.get_preset_paths(get_all=True)
             if paths:
                 path = paths[-1]
 
@@ -348,7 +348,7 @@ class PlayblastPreset(base.BaseWidget, object):
         Internal function that syncronizes presets from Artella
         """
 
-        presets_paths = self.get_preset_paths()
+        presets_paths = self.get_preset_paths(get_all=True)
         if presets_paths:
             artellapipe.FilesMgr().sync_paths(presets_paths, recursive=True)
             self._presets.blockSignals(True)
