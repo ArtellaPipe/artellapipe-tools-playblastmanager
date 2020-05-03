@@ -18,6 +18,8 @@ import logging.config
 from Qt.QtWidgets import *
 
 import tpDcc as tp
+from tpDcc.libs.qt.core import menu
+from tpDcc.libs.qt.widgets import layouts, buttons, checkbox, combobox
 
 import artellapipe
 from artellapipe.tools.playblastmanager.core import defines, plugin
@@ -48,7 +50,7 @@ class ViewportOptionsWidget(plugin.PlayblastPlugin, object):
         self.setObjectName(self.label)
 
     def get_main_layout(self):
-        main_layout = QVBoxLayout()
+        main_layout = layouts.VerticalLayout()
         main_layout.setContentsMargins(0, 0, 0, 0)
 
         return main_layout
@@ -58,12 +60,12 @@ class ViewportOptionsWidget(plugin.PlayblastPlugin, object):
 
         self.show_types = self.get_show_object_tyes()
 
-        menus_layout = QHBoxLayout()
+        menus_layout = layouts.HorizontalLayout()
 
         self.display_light_menu = self._build_light_menu()
         self.display_light_menu.setFixedHeight(20)
 
-        self.show_types_btn = QPushButton('Show')
+        self.show_types_btn = buttons.QPushButton('Show')
         self.show_types_btn.setFixedHeight(20)
         self.show_types_menu = self._build_show_menu()
         self.show_types_btn.setMenu(self.show_types_menu)
@@ -71,14 +73,14 @@ class ViewportOptionsWidget(plugin.PlayblastPlugin, object):
         menus_layout.addWidget(self.display_light_menu)
         menus_layout.addWidget(self.show_types_btn)
 
-        cbx_layout = QGridLayout()
-        self.high_quality = QCheckBox()
+        cbx_layout = layouts.GridLayout()
+        self.high_quality = checkbox.BaseCheckBox()
         self.high_quality.setText('Force Viewport 2.0 + AA')
-        self.override_viewport = QCheckBox('Override Viewport Settings')
+        self.override_viewport = checkbox.BaseCheckBox('Override Viewport Settings')
         self.override_viewport.setChecked(True)
-        self.two_sided_lighting = QCheckBox('Two Sided Lighting')
+        self.two_sided_lighting = checkbox.BaseCheckBox('Two Sided Lighting')
         self.two_sided_lighting.setChecked(False)
-        self.shadows = QCheckBox('Shadow')
+        self.shadows = checkbox.BaseCheckBox('Shadow')
         self.shadows.setChecked(False)
 
         cbx_layout.addWidget(self.override_viewport, 0, 0)
@@ -225,7 +227,7 @@ class ViewportOptionsWidget(plugin.PlayblastPlugin, object):
         :return: QComboBox
         """
 
-        menu = QComboBox(self)
+        menu = combobox.BaseComboBox(self)
 
         display_lights = (
             ("Use Default Lighting", "default"),
@@ -247,29 +249,29 @@ class ViewportOptionsWidget(plugin.PlayblastPlugin, object):
         :return: QMenu
         """
 
-        menu = QMenu(self)
-        menu.setObjectName('ShowShapesMenu')
-        menu.setWindowTitle('Show')
-        menu.setFixedWidth(180)
-        menu.setTearOffEnabled(False)
+        new_menu = menu.BaseMenu(exclusive=False, parent=self)
+        new_menu.setObjectName('ShowShapesMenu')
+        new_menu.setWindowTitle('Show')
+        new_menu.setFixedWidth(180)
+        new_menu.setTearOffEnabled(False)
 
-        toggle_all = QAction(menu, text='All')
-        toggle_none = QAction(menu, text='None')
-        menu.addAction(toggle_all)
-        menu.addAction(toggle_none)
-        menu.addSeparator()
+        toggle_all = QAction(new_menu, text='All')
+        toggle_none = QAction(new_menu, text='None')
+        new_menu.addAction(toggle_all)
+        new_menu.addAction(toggle_none)
+        new_menu.addSeparator()
 
         for shp in self.show_types:
-            action = QAction(menu, text=shp)
+            action = QAction(new_menu, text=shp)
             action.setCheckable(True)
             action.toggled.connect(self.optionsChanged)
-            menu.addAction(action)
+            new_menu.addAction(action)
             self.show_type_actions.append(action)
 
         toggle_all.triggered.connect(self._on_toggle_all_visible)
         toggle_none.triggered.connect(self._on_toggle_all_hide)
 
-        return menu
+        return new_menu
 
     def parse_view(self, panel):
         """

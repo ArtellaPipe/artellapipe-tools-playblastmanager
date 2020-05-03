@@ -12,7 +12,7 @@ __license__ = "MIT"
 __maintainer__ = "Tomas Poveda"
 __email__ = "tpovedatd@gmail.com"
 
-from Qt.QtWidgets import *
+from tpDcc.libs.qt.widgets import layouts, checkbox
 
 from artellapipe.tools.playblastmanager.core import plugin
 
@@ -26,7 +26,7 @@ class StampWidget(plugin.PlayblastPlugin, object):
         super(StampWidget, self).__init__(project=project, config=config, parent=parent)
 
     def get_main_layout(self):
-        main_layout = QVBoxLayout()
+        main_layout = layouts.VerticalLayout()
         main_layout.setContentsMargins(0, 0, 0, 0)
 
         return main_layout
@@ -34,7 +34,7 @@ class StampWidget(plugin.PlayblastPlugin, object):
     def ui(self):
         super(StampWidget, self).ui()
 
-        self.enable_cbx = QCheckBox('Enable')
+        self.enable_cbx = checkbox.BaseCheckBox('Enable')
         self.main_layout.addWidget(self.enable_cbx)
 
     def get_inputs(self, as_preset=False):

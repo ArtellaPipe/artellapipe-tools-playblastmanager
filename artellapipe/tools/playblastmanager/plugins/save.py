@@ -17,15 +17,15 @@ import datetime
 import logging.config
 from functools import partial
 
-from Qt.QtCore import *
 from Qt.QtWidgets import *
-
-from tpDcc.libs.python import osplatform
+from Qt.QtCore import *
 
 import tpDcc as tp
+from tpDcc.libs.python import osplatform, fileio
+from tpDcc.libs.qt.core import menu
+from tpDcc.libs.qt.widgets import layouts, label, checkbox, lineedit, dividers, buttons
 
-from tpDcc.libs.qt.widgets import splitters
-
+import artellapipe
 from artellapipe.tools.playblastmanager.core import plugin
 
 LOGGER = logging.getLogger()
@@ -71,7 +71,7 @@ class SaveWidget(plugin.PlayblastPlugin, object):
         super(SaveWidget, self).__init__(project=project, config=config, parent=parent)
 
     def get_main_layout(self):
-        main_layout = QVBoxLayout()
+        main_layout = layouts.VerticalLayout()
         main_layout.setContentsMargins(0, 0, 0, 0)
 
         return main_layout
@@ -79,48 +79,47 @@ class SaveWidget(plugin.PlayblastPlugin, object):
     def ui(self):
         super(SaveWidget, self).ui()
 
-        self.save_file = QCheckBox('Save')
-        self.open_viewer = QCheckBox('Open Viewer when finished')
-        self.raw_frame_numbers = QCheckBox('Raw Frame Numbers')
+        self.save_file = checkbox.BaseCheckBox('Save')
+        self.open_viewer = checkbox.BaseCheckBox('Open Viewer when finished')
+        self.raw_frame_numbers = checkbox.BaseCheckBox('Raw Frame Numbers')
 
-        cbx_layout = QHBoxLayout()
+        cbx_layout = layouts.HorizontalLayout()
         cbx_layout.setContentsMargins(5, 0, 5, 0)
         cbx_layout.addWidget(self.save_file)
-        cbx_layout.addWidget(splitters.get_horizontal_separator_widget())
+        cbx_layout.addWidget(dividers.get_horizontal_separator_widget())
         cbx_layout.addWidget(self.open_viewer)
-        cbx_layout.addWidget(splitters.get_horizontal_separator_widget())
+        cbx_layout.addWidget(dividers.get_horizontal_separator_widget())
         cbx_layout.addWidget(self.raw_frame_numbers)
         cbx_layout.addStretch(True)
 
         self.play_recent_widget = QWidget()
-        play_recent_layout = QVBoxLayout()
+        play_recent_layout = layouts.VerticalLayout()
         self.play_recent_widget.setLayout(play_recent_layout)
-        self.play_recent = QPushButton('Play recent playblast')
-        self.recent_menu = QMenu()
+        self.play_recent = buttons.BaseButton('Play recent playblast')
+        self.recent_menu = menu.BaseMenu()
         self.play_recent.setMenu(self.recent_menu)
         play_recent_layout.addWidget(self.play_recent)
         cbx_layout.addWidget(self.play_recent_widget)
 
         self.path_widget = QWidget()
         self.path_widget.setEnabled(False)
-        path_layout = QVBoxLayout()
+        path_layout = layouts.VerticalLayout()
         path_layout.setContentsMargins(0, 0, 0, 0)
         path_layout.setSpacing(0)
-        path_base_layout = QHBoxLayout()
+        path_base_layout = layouts.HorizontalLayout()
         path_base_layout.setContentsMargins(0, 0, 0, 0)
         path_base_layout.setSpacing(0)
         path_layout.addLayout(path_base_layout)
         self.path_widget.setLayout(path_layout)
-        path_lbl = QLabel('Path: ')
-        path_lbl.setFixedWidth(30)
-        self.file_path = QLineEdit()
+        path_lbl = label.BaseLabel('Path: ')
+        self.file_path = lineedit.BaseLineEdit()
         tip = 'Right click in the text filed to insert tokens'
         self.file_path.setToolTip(tip)
         self.file_path.setStatusTip(tip)
         self.file_path.setContextMenuPolicy(Qt.CustomContextMenu)
         self.file_path.customContextMenuRequested.connect(self._on_show_token_menu)
         browse_icon = tp.ResourcesMgr().icon('open')
-        self.browse = QPushButton()
+        self.browse = buttons.BaseButton()
         self.browse.setIcon(browse_icon)
         self.browse.setFixedWidth(30)
         self.browse.setToolTip('Playblast Save Path')
@@ -183,7 +182,7 @@ class SaveWidget(plugin.PlayblastPlugin, object):
             str_time_stamp = time_stamp.strftime("%d-%m-%Y_%H-%M-%S")
             save_path = '{}_{}'.format(scene, str_time_stamp)
 
-        output['filename'] = save_path
+        output['filename'] = save_path or artellapipe.MediaMgr().create_temp_path('playblast')
 
         return output
 
@@ -234,13 +233,21 @@ class SaveWidget(plugin.PlayblastPlugin, object):
         :param options:
         """
 
-        LOGGER.debug('Generating Playblast with options: {}'.format(options))
+        LOGGER.info('Saved Playblast with options: {}'.format(options))
 
         playblast_file = options['filename']
         if not playblast_file:
             return
+        if isinstance(playblast_file, (list, tuple)):
+            for play_file in playblast_file:
+                self.add_playblast(play_file)
+            file_to_open = playblast_file[-1]
+        else:
+            self.add_playblast(playblast_file)
+            file_to_open = playblast_file
 
-        self.add_playblast(playblast_file)
+        if file_to_open and self.open_viewer.isChecked() and os.path.isfile(file_to_open):
+            fileio.open_browser(file_to_open)
 
     def _token_menu(self):
         """

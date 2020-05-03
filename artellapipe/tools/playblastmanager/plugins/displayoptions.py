@@ -13,11 +13,10 @@ __maintainer__ = "Tomas Poveda"
 __email__ = "tpovedatd@gmail.com"
 
 from Qt.QtCore import *
-from Qt.QtWidgets import *
 
 import tpDcc as tp
 
-from tpDcc.libs.qt.widgets import color
+from tpDcc.libs.qt.widgets import layouts, color, label, checkbox, combobox
 
 from artellapipe.tools.playblastmanager.core import plugin
 
@@ -51,7 +50,7 @@ class DisplayOptionsWidget(plugin.PlayblastPlugin, object):
         super(DisplayOptionsWidget, self).__init__(project=project, config=config, parent=parent)
 
     def get_main_layout(self):
-        main_layout = QVBoxLayout()
+        main_layout = layouts.VerticalLayout()
         main_layout.setContentsMargins(0, 0, 0, 0)
 
         return main_layout
@@ -59,12 +58,12 @@ class DisplayOptionsWidget(plugin.PlayblastPlugin, object):
     def ui(self):
         super(DisplayOptionsWidget, self).ui()
 
-        self.override = QCheckBox('Override Display Options')
+        self.override = checkbox.BaseCheckBox('Override Display Options')
 
-        self.display_type = QComboBox()
+        self.display_type = combobox.BaseComboBox()
         self.display_type.addItems(['Solid', 'Gradient'])
 
-        self._color_layout = QHBoxLayout()
+        self._color_layout = layouts.HorizontalLayout()
         for lbl, default in self.COLORS.items():
             self._add_color_picker(self._color_layout, lbl, default)
 
@@ -140,17 +139,17 @@ class DisplayOptionsWidget(plugin.PlayblastPlugin, object):
 
         return self.display_type.currentText() == 'Gradient'
 
-    def _add_color_picker(self, layout, label, default):
+    def _add_color_picker(self, layout, label_name, default):
         """
         Internal function that creates a picker with a label and a button to select a color
         :param layout: QLayout, layout to add color picker to
-        :param label: str, systen name for the color type (egp: backgorundTop)
+        :param label: str, system name for the color type (egp: backgorundTop)
         :param default: list, default color to start with
         :return: solstice_color.ColorPicker
         """
 
-        color_layout = QVBoxLayout()
-        lbl = QLabel(self.LABELS[label])
+        color_layout = layouts.VerticalLayout()
+        lbl = label.BaseLabel(self.LABELS[label_name])
         color_picker = color.ColorPicker()
         color_picker.color = default
         color_layout.addWidget(lbl)
@@ -158,7 +157,7 @@ class DisplayOptionsWidget(plugin.PlayblastPlugin, object):
         color_layout.setAlignment(lbl, Qt.AlignCenter)
         layout.addLayout(color_layout)
         color_picker.colorChanged.connect(self.optionsChanged)
-        self._colors[label] = color_picker
+        self._colors[label_name] = color_picker
 
         return color_picker
 

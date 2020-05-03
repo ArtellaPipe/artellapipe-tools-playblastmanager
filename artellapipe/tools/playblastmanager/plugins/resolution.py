@@ -19,6 +19,7 @@ from Qt.QtCore import *
 from Qt.QtWidgets import *
 
 import tpDcc as tp
+from tpDcc.libs.qt.widgets import layouts, label, buttons, combobox, spinbox, lineedit
 
 from artellapipe.tools.playblastmanager.core import plugin
 
@@ -40,7 +41,7 @@ class ResolutionWidget(plugin.PlayblastPlugin, object):
         super(ResolutionWidget, self).__init__(project=project, config=config, parent=parent)
 
     def get_main_layout(self):
-        main_layout = QVBoxLayout()
+        main_layout = layouts.VerticalLayout()
         main_layout.setContentsMargins(0, 0, 0, 0)
 
         return main_layout
@@ -48,27 +49,27 @@ class ResolutionWidget(plugin.PlayblastPlugin, object):
     def ui(self):
         super(ResolutionWidget, self).ui()
 
-        self.mode = QComboBox()
+        self.mode = combobox.BaseComboBox()
         self.mode.addItems(
             [ScaleSettings.SCALE_WINDOW, ScaleSettings.SCALE_RENDER_SETTINGS, ScaleSettings.SCALE_CUSTOM])
         self.mode.setCurrentIndex(1)
 
         self.resolution = QWidget()
-        resolution_layout = QHBoxLayout()
+        resolution_layout = layouts.HorizontalLayout()
         resolution_layout.setContentsMargins(0, 0, 0, 0)
         resolution_layout.setSpacing(6)
         self.resolution.setLayout(resolution_layout)
 
-        width_lbl = QLabel('Width')
+        width_lbl = label.BaseLabel('Width')
         width_lbl.setFixedWidth(40)
-        self.width = QSpinBox()
+        self.width = spinbox.BaseSpinBox()
         self.width.setMinimum(0)
         self.width.setMaximum(99999)
         self.width.setValue(1920)
 
-        height_lbl = QLabel('Height')
+        height_lbl = label.BaseLabel('Height')
         height_lbl.setFixedWidth(40)
-        self.height = QSpinBox()
+        self.height = spinbox.BaseSpinBox()
         self.height.setMinimum(0)
         self.height.setMaximum(99999)
         self.height.setValue(1080)
@@ -78,21 +79,20 @@ class ResolutionWidget(plugin.PlayblastPlugin, object):
         resolution_layout.addWidget(height_lbl)
         resolution_layout.addWidget(self.height)
 
-        self.scale_result = QLineEdit()
+        self.scale_result = lineedit.BaseLineEdit()
         self.scale_result.setReadOnly(True)
 
-        self.percent_layout = QHBoxLayout()
-        self.percent_lbl = QLabel('Scale')
-        self.percent = QDoubleSpinBox()
+        self.percent_layout = layouts.HorizontalLayout()
+        self.percent_lbl = label.BaseLabel('Scale')
+        self.percent = spinbox.BaseDoubleSpinBox()
         self.percent.setMinimum(0.01)
         self.percent.setSingleStep(0.05)
         self.percent.setValue(1.0)
-        self.percent_presets_layout = QHBoxLayout()
+        self.percent_presets_layout = layouts.HorizontalLayout()
         self.percent_presets_layout.setSpacing(4)
         for value in [0.25, 0.5, 0.75, 1.0, 2.0]:
-            btn = QPushButton(str(value))
+            btn = buttons.BaseButton(str(value))
             self.percent_presets_layout.addWidget(btn)
-            btn.setFixedWidth(35)
             btn.clicked.connect(partial(self.percent.setValue, value))
         self.percent_layout.addWidget(self.percent_lbl)
         self.percent_layout.addWidget(self.percent)

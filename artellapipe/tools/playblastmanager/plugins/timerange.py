@@ -15,9 +15,8 @@ __email__ = "tpovedatd@gmail.com"
 import re
 import sys
 
-from Qt.QtWidgets import *
-
 import tpDcc as tp
+from tpDcc.libs.qt.widgets import layouts, combobox, spinbox, lineedit
 
 from artellapipe.tools.playblastmanager.core import plugin
 
@@ -42,7 +41,7 @@ class TimeRangeWidget(plugin.PlayblastPlugin, object):
         super(TimeRangeWidget, self).__init__(project=project, config=config, parent=parent)
 
     def get_main_layout(self):
-        main_layout = QHBoxLayout()
+        main_layout = layouts.HorizontalLayout()
         main_layout.setContentsMargins(5, 0, 5, 0)
 
         return main_layout
@@ -50,21 +49,21 @@ class TimeRangeWidget(plugin.PlayblastPlugin, object):
     def ui(self):
         super(TimeRangeWidget, self).ui()
 
-        self.mode = QComboBox()
+        self.mode = combobox.BaseComboBox()
         self.mode.addItems(
             [TimeRanges.RANGE_TIME_SLIDER,
              TimeRanges.RANGE_START_END,
              TimeRanges.CURRENT_FRAME,
              TimeRanges.CUSTOM_FRAMES])
 
-        self.start = QSpinBox()
+        self.start = spinbox.BaseSpinBox()
         self.start.setRange(-sys.maxint, sys.maxint)
         self.start.setFixedHeight(20)
-        self.end = QSpinBox()
+        self.end = spinbox.BaseSpinBox()
         self.end.setRange(-sys.maxint, sys.maxint)
         self.end.setFixedHeight(20)
 
-        self.custom_frames = QLineEdit()
+        self.custom_frames = lineedit.BaseLineEdit()
         self.custom_frames.setFixedHeight(20)
         self.custom_frames.setPlaceholderText('Example: 1-20,25,50,75,100-150')
         self.custom_frames.setVisible(True)

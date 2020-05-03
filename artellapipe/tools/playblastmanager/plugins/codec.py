@@ -12,9 +12,8 @@ __license__ = "MIT"
 __maintainer__ = "Tomas Poveda"
 __email__ = "tpovedatd@gmail.com"
 
-from Qt.QtWidgets import *
-
 import tpDcc as tp
+from tpDcc.libs.qt.widgets import layouts, combobox, spinbox
 
 from artellapipe.tools.playblastmanager.core import plugin
 
@@ -28,7 +27,7 @@ class CodecWidget(plugin.PlayblastPlugin, object):
         super(CodecWidget, self).__init__(project=project, config=config, parent=parent)
 
     def get_main_layout(self):
-        main_layout = QHBoxLayout()
+        main_layout = layouts.HorizontalLayout()
         main_layout.setContentsMargins(0, 0, 0, 0)
 
         return main_layout
@@ -36,9 +35,9 @@ class CodecWidget(plugin.PlayblastPlugin, object):
     def ui(self):
         super(CodecWidget, self).ui()
 
-        self.format = QComboBox()
-        self.compression = QComboBox()
-        self.quality = QSpinBox()
+        self.format = combobox.BaseComboBox()
+        self.compression = combobox.BaseComboBox()
+        self.quality = spinbox.BaseSpinBox()
         self.quality.setMinimum(0)
         self.quality.setMaximum(100)
         self.quality.setValue(100)

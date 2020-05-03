@@ -15,15 +15,17 @@ __email__ = "tpovedatd@gmail.com"
 import logging
 import traceback
 
+from Qt.QtCore import *
 from Qt.QtWidgets import *
+from Qt.QtGui import *
 
 import tpDcc as tp
+from tpDcc.libs.qt.widgets import layouts, label, checkbox, combobox, lineedit
 
 import artellapipe
 from artellapipe.tools.playblastmanager.core import plugin
 
 LOGGER = logging.getLogger()
-
 
 class TrackerPlugin(plugin.PlayblastPlugin, object):
 
@@ -46,7 +48,7 @@ class TrackerPlugin(plugin.PlayblastPlugin, object):
         return artellapipe.Tracker().is_tracking_available()
 
     def get_main_layout(self):
-        main_layout = QVBoxLayout()
+        main_layout = layouts.VerticalLayout()
         main_layout.setContentsMargins(2, 2, 2, 2)
 
         return main_layout
@@ -54,34 +56,37 @@ class TrackerPlugin(plugin.PlayblastPlugin, object):
     def ui(self):
         super(TrackerPlugin, self).ui()
 
-        self._upload_playblast_cbx = QCheckBox('Upload Playblast to Production Tracker?')
+        self._upload_playblast_cbx = checkbox.BaseCheckBox('Upload Playblast to Production Tracker?')
         self._upload_playblast_cbx.setChecked(True)
         self.main_layout.addWidget(self._upload_playblast_cbx)
 
-        combos_layout = QHBoxLayout()
+        combos_layout = layouts.HorizontalLayout()
         combos_layout.setContentsMargins(2, 2, 2, 2)
         combos_layout.setSpacing(2)
         self.main_layout.addLayout(combos_layout)
 
-        self._sequences_combo = QComboBox()
-        self._sequences_combo.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
-        self._shots_combo = QComboBox()
-        self._shots_combo.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
-        self._tasks_combo = QComboBox()
-        self._tasks_combo.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        self._sequences_combo = combobox.BaseComboBox()
+        self._sequences_combo.set_placeholder('< Sequence >')
+        self._shots_combo = combobox.BaseComboBox()
+        self._shots_combo.set_placeholder('< Shot >')
+        self._tasks_combo = combobox.BaseComboBox()
+        self._tasks_combo.set_placeholder('< Task >')
+        self._task_status_combo = combobox.BaseComboBox()
+        self._task_status_combo.set_placeholder('< Status >')
 
         combos_layout.addWidget(self._sequences_combo)
-        combos_layout.addWidget(QLabel("<span style='color:#E2AC2C'> &#9656; </span>"))
+        combos_layout.addWidget(label.BaseLabel("<span style='color:#E2AC2C'> &#9656; </span>"))
         combos_layout.addWidget(self._shots_combo)
-        combos_layout.addWidget(QLabel("<span style='color:#E2AC2C'> &#9656; </span>"))
+        combos_layout.addWidget(label.BaseLabel("<span style='color:#E2AC2C'> &#9656; </span>"))
         combos_layout.addWidget(self._tasks_combo)
+        combos_layout.addWidget(label.BaseLabel("<span style='color:#E2AC2C'> &#9656; </span>"))
+        combos_layout.addWidget(self._task_status_combo)
 
-        stamp_version_lbl = QHBoxLayout()
+        stamp_version_lbl = layouts.HorizontalLayout()
         stamp_version_lbl.setContentsMargins(2, 2, 2, 2)
         stamp_version_lbl.setSpacing(2)
-        stamp_templates_lbl = QLabel('Task Comment: ')
-        self._task_comment_line = QLineEdit()
-        self._task_comment_line.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        stamp_templates_lbl = label.BaseLabel('Task Comment: ')
+        self._task_comment_line = lineedit.BaseLineEdit()
         stamp_version_lbl.addWidget(stamp_templates_lbl)
         stamp_version_lbl.addWidget(self._task_comment_line)
         self.main_layout.addLayout(stamp_version_lbl)
@@ -89,6 +94,7 @@ class TrackerPlugin(plugin.PlayblastPlugin, object):
     def setup_signals(self):
         self._sequences_combo.currentIndexChanged.connect(self._on_sequence_selected)
         self._shots_combo.currentIndexChanged.connect(self._on_shot_selected)
+        self._tasks_combo.currentIndexChanged.connect(self._on_task_selected)
 
     def get_inputs(self, as_preset=False):
         """
@@ -102,7 +108,8 @@ class TrackerPlugin(plugin.PlayblastPlugin, object):
             'sequence_name': self._sequences_combo.currentText(),
             'shot_name': self._shots_combo.currentText(),
             'task_name': self._tasks_combo.currentText(),
-            'task_comment': self._task_comment_line.text()
+            'task_comment': self._task_comment_line.text(),
+            'task_status': self._task_status_combo.currentText()
         }
 
     def get_outputs(self):
@@ -115,6 +122,7 @@ class TrackerPlugin(plugin.PlayblastPlugin, object):
         sequence_name = None
         shot_name = None
         task_name = None
+        task_status = None
 
         sequence_index = self._sequences_combo.currentIndex()
         if sequence_index > 0:
@@ -125,13 +133,17 @@ class TrackerPlugin(plugin.PlayblastPlugin, object):
         task_index = self._tasks_combo.currentIndex()
         if task_index >= 0:
             task_name = self._tasks_combo.currentText()
+        task_status_index = self._task_status_combo.currentIndex()
+        if task_status_index > 0:
+            task_status = self._task_status_combo.currentText()
 
         return {
             'tracker_enable': self._upload_playblast_cbx.isChecked(),
             'sequence_name': sequence_name,
             'shot_name': shot_name,
             'task_name': task_name,
-            'task_comment': self._task_comment_line.text()
+            'task_status': task_status,
+            'task_comment': self._task_comment_line.text(),
         }
 
     def apply_inputs(self, attrs_dict):
@@ -144,15 +156,17 @@ class TrackerPlugin(plugin.PlayblastPlugin, object):
         self._fill_sequences_combo()
         self._shots_combo.clear()
         self._tasks_combo.clear()
+        self._task_status_combo.clear()
         self._shots_combo.setEnabled(False)
         self._tasks_combo.setEnabled(False)
+        self._task_status_combo.setEnabled(False)
         self._fill_info_from_scene()
 
     def _fill_sequences_combo(self):
         self._sequences_combo.blockSignals(True)
         try:
             self._sequences_combo.clear()
-            self._sequences_combo.addItem('< Select Sequence >')
+            self._sequences_combo.addItem('< Sequence >')
             all_sequences = artellapipe.SequencesMgr().get_sequence_names() or list()
             for sequence_name in all_sequences:
                 self._sequences_combo.addItem(sequence_name)
@@ -195,8 +209,17 @@ class TrackerPlugin(plugin.PlayblastPlugin, object):
         if clear:
             self._shots_combo.clear()
             self._tasks_combo.clear()
+            self._task_status_combo.clear()
         self._shots_combo.setEnabled(False)
         self._tasks_combo.setEnabled(False)
+        self._task_status_combo.setEnabled(False)
+
+    def _add_status_item(self, index, name, color):
+        self._task_status_combo.addItem(name)
+        size = self._task_status_combo.style().pixelMetric(QStyle.PM_SmallIconSize)
+        pixmap = QPixmap(size, size)
+        pixmap.fill(QColor(color))
+        self._task_status_combo.setItemData(index, pixmap, Qt.DecorationRole)
 
     def _on_sequence_selected(self, index):
         self._disable_combos()
@@ -227,3 +250,29 @@ class TrackerPlugin(plugin.PlayblastPlugin, object):
             return
         self._tasks_combo.setEnabled(True)
         self._tasks_combo.addItems(shot_tasks)
+
+    def _on_task_selected(self, index):
+        self._task_status_combo.clear()
+        self._task_status_combo.setEnabled(False)
+
+        shot_name = self._shots_combo.itemText(index)
+        if not shot_name:
+            return
+
+        task_name = self._tasks_combo.currentText()
+        if not task_name:
+            return
+
+        task_statuses = artellapipe.TasksMgr().get_all_task_statuses()
+        for i, task_status in enumerate(task_statuses):
+            self._add_status_item(i, task_status.name, task_status.color)
+        self._task_status_combo.setEnabled(True)
+
+        shot_task_status = artellapipe.TasksMgr().get_task_status_for_shot(shot_name, task_name)
+        if not shot_task_status:
+            return
+        status_name = shot_task_status.name
+        status_index = self._task_status_combo.findText(status_name, Qt.MatchExactly)
+        if status_index == -1:
+            return
+        self._task_status_combo.setCurrentIndex(status_index)

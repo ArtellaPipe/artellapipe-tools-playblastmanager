@@ -12,9 +12,8 @@ __license__ = "MIT"
 __maintainer__ = "Tomas Poveda"
 __email__ = "tpovedatd@gmail.com"
 
-from Qt.QtWidgets import *
-
 import tpDcc as tp
+from tpDcc.libs.qt.widgets import layouts, combobox
 
 from artellapipe.tools.playblastmanager.core import plugin
 
@@ -34,7 +33,7 @@ class RendererWidget(plugin.PlayblastPlugin, object):
         super(RendererWidget, self).__init__(project=project, config=config, parent=parent)
 
     def get_main_layout(self):
-        main_layout = QVBoxLayout()
+        main_layout = layouts.VerticalLayout()
         main_layout.setContentsMargins(0, 0, 0, 0)
 
         return main_layout
@@ -42,7 +41,7 @@ class RendererWidget(plugin.PlayblastPlugin, object):
     def ui(self):
         super(RendererWidget, self).ui()
 
-        self.renderers = QComboBox()
+        self.renderers = combobox.BaseComboBox()
         self.renderers.addItems(self._renderers.keys())
         self.main_layout.addWidget(self.renderers)
         self.apply_inputs(self.get_defaults())

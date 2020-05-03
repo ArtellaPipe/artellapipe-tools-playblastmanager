@@ -17,9 +17,10 @@ import logging.config
 
 from Qt.QtWidgets import *
 
-from tpDcc.libs.python import python
-
 import tpDcc as tp
+from tpDcc.libs.python import python
+from tpDcc.libs.qt.widgets import layouts, buttons, combobox
+
 
 from artellapipe.tools.playblastmanager.core import plugin
 
@@ -41,10 +42,10 @@ class CamerasWidget(plugin.PlayblastPlugin, object):
         super(CamerasWidget, self).__init__(project=project, config=config, parent=parent)
 
         self._on_set_active_camera()
-        self._on_update_label()
+        self._on_camera_selected()
 
     def get_main_layout(self):
-        main_layout = QHBoxLayout()
+        main_layout = layouts.HorizontalLayout()
         main_layout.setContentsMargins(5, 0, 5, 0)
 
         return main_layout
@@ -52,14 +53,14 @@ class CamerasWidget(plugin.PlayblastPlugin, object):
     def ui(self):
         super(CamerasWidget, self).ui()
 
-        self.cameras = QComboBox()
+        self.cameras = combobox.BaseComboBox()
         self.cameras.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         self.cameras.setMinimumWidth(200)
 
-        self.get_active = QPushButton('Get Active')
+        self.get_active = buttons.BaseButton('Get Active')
         self.get_active.setToolTip('Set camera from currently active view')
         refresh_icon = tp.ResourcesMgr().icon('refresh')
-        self.refresh = QPushButton()
+        self.refresh = buttons.BaseButton()
         self.refresh.setMaximumWidth(25)
         self.refresh.setIcon(refresh_icon)
         self.refresh.setToolTip('Refresh the list of cameras')
@@ -71,7 +72,7 @@ class CamerasWidget(plugin.PlayblastPlugin, object):
     def setup_signals(self):
         self.get_active.clicked.connect(self._on_set_active_camera)
         self.refresh.clicked.connect(self._on_refresh)
-        self.cameras.currentIndexChanged.connect(self._on_update_label)
+        self.cameras.currentIndexChanged.connect(self._on_camera_selected)
 
     def validate(self):
         """
@@ -115,7 +116,7 @@ class CamerasWidget(plugin.PlayblastPlugin, object):
             cameras = python.force_list(cameras)
             camera = cameras[0]
             for i in range(self.cameras.count()):
-                value = str(self.cameras.itemText(i))
+                value = str(self.cameras.itemData(i))
                 if value == camera:
                     self.cameras.setCurrentIndex(i)
                     return
@@ -162,15 +163,17 @@ class CamerasWidget(plugin.PlayblastPlugin, object):
         # if tp.Dcc.object_exists(camera):
         #     cmds.select(camera)
 
-    def _on_update_label(self):
+    def _on_camera_selected(self):
         """
         Internal callback function that updates the text of the camera label
         """
 
+        index = self.cameras.currentIndex()
         camera = self.cameras.currentText()
-        camera = camera.split('|', 1)[-1]
+        camera_full_name = self.cameras.itemData(index)
         self.label = 'Camera ({})'.format(camera)
         self.labelChanged.emit(self.label)
+        tp.Dcc.look_through_camera(camera_full_name)
 
         self.validate()
 

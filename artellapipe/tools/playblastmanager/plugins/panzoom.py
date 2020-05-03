@@ -12,7 +12,7 @@ __license__ = "MIT"
 __maintainer__ = "Tomas Poveda"
 __email__ = "tpovedatd@gmail.com"
 
-from Qt.QtWidgets import *
+from tpDcc.libs.qt.widgets import layouts, checkbox
 
 from artellapipe.tools.playblastmanager.core import plugin
 
@@ -30,7 +30,7 @@ class PanZoomWidget(plugin.PlayblastPlugin, object):
         super(PanZoomWidget, self).__init__(project=project, config=config, parent=parent)
 
     def get_main_layout(self):
-        main_layout = QHBoxLayout()
+        main_layout = layouts.HorizontalLayout()
         main_layout.setContentsMargins(5, 0, 5, 0)
 
         return main_layout
@@ -38,7 +38,7 @@ class PanZoomWidget(plugin.PlayblastPlugin, object):
     def ui(self):
         super(PanZoomWidget, self).ui()
 
-        self.pan_zoom = QCheckBox('Use pan/zoom from camera')
+        self.pan_zoom = checkbox.BaseCheckBox('Use pan/zoom from camera')
         self.pan_zoom.setChecked(True)
 
         self.main_layout.addWidget(self.pan_zoom)
