@@ -535,4 +535,3 @@ class PlayblastTemplateConfigurationDialog(dialog.ArtellaDialog, object):
             self.playblast_config_widgets.append(playblast_plugin)
             if item is not None:
                 playblast_plugin.labelChanged.connect(item.setTitle)
-

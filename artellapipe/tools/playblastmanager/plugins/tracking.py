@@ -27,6 +27,7 @@ from artellapipe.tools.playblastmanager.core import plugin
 
 LOGGER = logging.getLogger()
 
+
 class TrackerPlugin(plugin.PlayblastPlugin, object):
 
     id = 'Tracker'
