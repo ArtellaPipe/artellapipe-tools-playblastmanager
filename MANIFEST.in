@@ -1,2 +1,4 @@
 include artellapipe/tools/playblastmanager/__logging__.ini
 recursive-include artellapipe/tools/playblastmanager/resources/ *.*
+include versioneer.py
+include artellapipe/tools/playblastmanager/_version.py
