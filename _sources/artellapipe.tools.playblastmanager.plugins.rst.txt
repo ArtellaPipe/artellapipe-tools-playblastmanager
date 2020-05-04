@@ -5,6 +5,7 @@ Submodules
 ----------
 
 .. toctree::
+   :maxdepth: 4
 
    artellapipe.tools.playblastmanager.plugins.cameras
    artellapipe.tools.playblastmanager.plugins.codec
